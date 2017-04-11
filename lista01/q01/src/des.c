@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "des.h"
+#include "binary_handler.h"
 
-int ip[] = {58, 50, 42, 34, 26, 18, 10, 2,
-						60, 52, 44, 36, 28, 20, 12, 4,
-						62, 54, 46, 38, 30, 22, 14, 6,
-						64, 56, 48, 40, 32, 24, 16, 8,
-						57, 49, 41, 33, 25, 17,  9, 1,
-						59, 51, 43, 35, 27, 19, 11, 3,
-						61, 53, 45, 37, 29, 21, 13, 5,
-						63, 55, 47, 39, 31, 23, 15, 7};
+// int ip[] = {58, 50, 42, 34, 26, 18, 10, 2,
+// 						60, 52, 44, 36, 28, 20, 12, 4,
+// 						62, 54, 46, 38, 30, 22, 14, 6,
+// 						64, 56, 48, 40, 32, 24, 16, 8,
+// 						57, 49, 41, 33, 25, 17,  9, 1,
+// 						59, 51, 43, 35, 27, 19, 11, 3,
+// 						61, 53, 45, 37, 29, 21, 13, 5,
+// 						63, 55, 47, 39, 31, 23, 15, 7};
 
 int ip_inverse[] =   {40,  8, 48, 16, 56, 24, 64, 32,
 											39,  7, 47, 15, 55, 23, 63, 31,
@@ -88,6 +90,7 @@ int pc1[] =  {57, 49,  41, 33,  25,  17,  9,
 							 7, 62,  54, 46,  38,  30, 22,
 							14,  6,  61, 53,  45,  37, 29,
 							21, 13,   5, 28,  20,  12,  4};
+							
 int key_shift_sizes[] = {-1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
 int pc2[] =  {14, 17, 11, 24,  1,  5,
@@ -99,3 +102,43 @@ int pc2[] =  {14, 17, 11, 24,  1,  5,
 							44, 49, 39, 56, 34, 53,
 							46, 42, 50, 36, 29, 32};
 
+unsigned char* generate_key() {
+	int i;
+	unsigned char* key = (unsigned char*) malloc( KEY_SIZE * sizeof(char)); ;
+	FILE* key_file = fopen("keyfile", "wb");
+
+	unsigned int seed = (unsigned int)time(NULL);
+	srand (seed);
+
+	if (!key_file) {
+		printf("Problems opening the keyfile");
+		return NULL;
+	}
+
+	for (i=0; i<8; i++) {
+		key[i] = rand()%255;
+	}
+
+	fwrite(key, 1, KEY_SIZE, key_file);
+	fclose(key_file);
+
+	return key;
+}
+
+void print_binary_key(unsigned char* key) {
+	unsigned char* binary_key_string = (unsigned char*)
+		malloc(KEY_SIZE * BYTE_SIZE * sizeof(char));
+	unsigned char* binary_char_string;
+
+	for(int i = 0; i < KEY_SIZE; i++) {
+		binary_char_string = translate_char_to_binary(key[i]);
+		if(i == 0) {
+			strncpy((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
+		}
+		else{
+			strncat((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
+		}
+	}
+
+	printf("binary key: %s\n", binary_key_string);
+}
