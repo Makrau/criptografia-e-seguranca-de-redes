@@ -11,7 +11,7 @@ CC = gcc
 CFLAGS = -Wall -g -lm
 
 SRC = ${wildcard $(SRC_DIR)/*.c}
-OBJ = ${addprefix $(OBJ_DIR), ${notdir ${SRC:.c=.o}}}
+OBJ = ${addprefix $(OBJ_DIR)/, ${notdir ${SRC:.c=.o}}}
 
 .PHONY: clean dist-clean
 
