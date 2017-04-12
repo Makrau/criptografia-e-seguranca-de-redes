@@ -1,3 +1,9 @@
+*.pdf
+*.html
+DES-master/
+lista01/q01/keyfile
+*.zip
+
 # Object files
 *.o
 *.ko
@@ -38,4 +44,4 @@ run
 rel/
 teste.txt.bkp
 prog
-*.bkp
+*.bkp	

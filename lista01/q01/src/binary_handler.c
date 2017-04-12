@@ -15,7 +15,6 @@ unsigned char* translate_char_to_binary(char input) {
 			binary_string[i] = '0';
 		}
 	}
-	printf("impressão intermediaria: %s\n", binary_string);
 
 	return binary_string;
 }

@@ -5,6 +5,7 @@
 #define DECRYPTION_MODE 0
 #define KEY_SIZE 8
 #define BYTE_SIZE 8
+#define PERMUTED_KEY_SIZE 56
 
 typedef struct {
 	unsigned char key[8];
@@ -13,6 +14,7 @@ typedef struct {
 } key_structure;
 
 unsigned char* generate_key();
-void print_binary_key(unsigned char* key);
+unsigned char* generate_binary_key_string(unsigned char* key);
+unsigned char* pc1_function(unsigned char* key_string);
 
 #endif

@@ -104,7 +104,7 @@ int pc2[] =  {14, 17, 11, 24,  1,  5,
 
 unsigned char* generate_key() {
 	int i;
-	unsigned char* key = (unsigned char*) malloc( KEY_SIZE * sizeof(char)); ;
+	unsigned char* key = (unsigned char*) malloc( KEY_SIZE * sizeof(char));
 	FILE* key_file = fopen("keyfile", "wb");
 
 	unsigned int seed = (unsigned int)time(NULL);
@@ -119,13 +119,14 @@ unsigned char* generate_key() {
 		key[i] = rand()%255;
 	}
 
+
 	fwrite(key, 1, KEY_SIZE, key_file);
 	fclose(key_file);
 
 	return key;
 }
 
-void print_binary_key(unsigned char* key) {
+unsigned char* generate_binary_key_string(unsigned char* key) {
 	unsigned char* binary_key_string = (unsigned char*)
 		malloc(KEY_SIZE * BYTE_SIZE * sizeof(char));
 	unsigned char* binary_char_string;
@@ -141,4 +142,24 @@ void print_binary_key(unsigned char* key) {
 	}
 
 	printf("binary key: %s\n", binary_key_string);
+
+	return binary_key_string;
+}
+
+unsigned char* pc1_function(unsigned char* key_string) {
+	unsigned char* permuted_key = (unsigned char*)
+		malloc(PERMUTED_KEY_SIZE * sizeof(char) + 1);
+		int bit_position;
+
+	for(int i = 0; i < PERMUTED_KEY_SIZE; i++) {
+		bit_position = pc1[i];
+		permuted_key[i] = key_string[bit_position - 1];
+	}
+
+	permuted_key[56] = '\0';
+
+	printf("binary key: %s\n", key_string);
+	printf("permuted key: %s\n", permuted_key);
+
+	return permuted_key;
 }

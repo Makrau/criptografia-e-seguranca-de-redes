@@ -25,9 +25,22 @@ int ip_1[] =   {40,  8, 48, 16, 56, 24, 64, 32,
 unsigned char main_key[8] = "amorvida";
 
 int main(int argc, char* argv[]) {
-	unsigned char* key;
-	key = generate_key();
-	print_binary_key(key);
+	unsigned char* key_string;
+	unsigned char* permuted_key_string;
+	unsigned char* key = malloc(8 * sizeof(char));
+	FILE* key_file = fopen("keyfile", "rb");
+	if(key_file) {
+		fread(key, sizeof(char), KEY_SIZE, key_file);
+		fclose(key_file);
+	}
+	else {
+		printf("chave não encontrada.\n");
+		printf("Gerando chave...\n");
+		key = generate_key();
+	}
+	
+	key_string = generate_binary_key_string(key);
+	permuted_key_string = pc1_function(key_string);
 	return 0;
 }
 
