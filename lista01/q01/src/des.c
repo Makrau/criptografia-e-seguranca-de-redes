@@ -6,14 +6,14 @@
 #include "des.h"
 #include "binary_handler.h"
 
-// int ip[] = {58, 50, 42, 34, 26, 18, 10, 2,
-// 						60, 52, 44, 36, 28, 20, 12, 4,
-// 						62, 54, 46, 38, 30, 22, 14, 6,
-// 						64, 56, 48, 40, 32, 24, 16, 8,
-// 						57, 49, 41, 33, 25, 17,  9, 1,
-// 						59, 51, 43, 35, 27, 19, 11, 3,
-// 						61, 53, 45, 37, 29, 21, 13, 5,
-// 						63, 55, 47, 39, 31, 23, 15, 7};
+int ip[] = {58, 50, 42, 34, 26, 18, 10, 2,
+						60, 52, 44, 36, 28, 20, 12, 4,
+						62, 54, 46, 38, 30, 22, 14, 6,
+						64, 56, 48, 40, 32, 24, 16, 8,
+						57, 49, 41, 33, 25, 17,  9, 1,
+						59, 51, 43, 35, 27, 19, 11, 3,
+						61, 53, 45, 37, 29, 21, 13, 5,
+						63, 55, 47, 39, 31, 23, 15, 7};
 
 int ip_inverse[] =   {40,  8, 48, 16, 56, 24, 64, 32,
 											39,  7, 47, 15, 55, 23, 63, 31,
@@ -162,4 +162,23 @@ unsigned char* pc1_function(unsigned char* key_string) {
 	printf("permuted key: %s\n", permuted_key);
 
 	return permuted_key;
+}
+
+key_structure* generate_sub_keys(unsigned char* key_string) {
+	unsigned char* permuted_key = pc1_function(key_string);
+	key_structure* sub_keys = malloc(KEY_C_D_AMOUNT * sizeof(key_structure));
+
+	strncpy((char*)sub_keys[0].key, (char*)permuted_key, PERMUTED_KEY_SIZE);
+
+	// Split permuted key into C0 and D0
+	strncpy((char*) sub_keys[0].c, (char*) sub_keys[0].key, C_D_SIZE);
+	strncpy((char*) sub_keys[0].d, (char*) sub_keys[0].key + C_D_SIZE, C_D_SIZE);
+
+
+
+	printf("C0: %s\n", sub_keys[0].c);
+	printf("D0: %s\n", sub_keys[0].d);
+	printf("%d \n", C_D_SIZE);
+
+	return sub_keys;
 }
