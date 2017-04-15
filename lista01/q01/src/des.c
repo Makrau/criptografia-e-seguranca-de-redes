@@ -146,10 +146,10 @@ unsigned char* generate_binary_key_string(unsigned char* key) {
 
 unsigned char* pc1_function(unsigned char* key_string) {
 	unsigned char* permuted_key = (unsigned char*)
-		malloc(KEY_BIT_SIZE * sizeof(char) + 1);
+		malloc(PC1_SIZE * sizeof(char) + 1);
 		int bit_position;
 
-	for(int i = 0; i < KEY_BIT_SIZE; i++) {
+	for(int i = 0; i < PC1_SIZE; i++) {
 		bit_position = pc1[i];
 		permuted_key[i] = key_string[bit_position - 1];
 	}
@@ -163,11 +163,9 @@ key_structure* generate_sub_keys(unsigned char* key_string) {
 	unsigned char* permuted_key = pc1_function(key_string);
 	key_structure* sub_keys = malloc(KEY_C_D_AMOUNT * sizeof(key_structure));
 
-	strncpy((char*)sub_keys[0].key, (char*)permuted_key, KEY_BIT_SIZE);
-
 	// Split permuted key into C0 and D0
-	strncpy((char*) sub_keys[0].c, (char*) sub_keys[0].key, 28);
-	strncpy((char*) sub_keys[0].d, (char*) sub_keys[0].key + C_D_SIZE, C_D_SIZE);
+	strncpy((char*) sub_keys[0].c, (char*) permuted_key, 28);
+	strncpy((char*) sub_keys[0].d, (char*) permuted_key + C_D_SIZE, C_D_SIZE);
 
 	sub_keys[0].c[28] = '\0';
 	sub_keys[0].d[28] = '\0';
@@ -190,7 +188,6 @@ void make_rounds(key_structure* sub_keys, int round) {
 		sub_keys[round].d[i] = sub_keys[round - 1].d[(i+left_shift) % C_D_SIZE];
 	}
 
-
 	sub_keys[round].c[28] = '\0';
 	sub_keys[round].d[28] = '\0';
 
@@ -198,7 +195,9 @@ void make_rounds(key_structure* sub_keys, int round) {
 	strcat((char*)temporary_string, (char*)sub_keys[round].d);
 
 	// making permutation 2
-	for(int i = 0; i < PC2_SIZE; i++) {
+	for(int i = 0; i < KEY_BIT_SIZE; i++) {
 		sub_keys[round].key[i] = temporary_string[pc2[i] - 1];
 	}
+
+	sub_keys[round].key[48] = '\0';
 }
