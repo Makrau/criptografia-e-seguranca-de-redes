@@ -128,36 +128,42 @@ unsigned char* generate_key() {
 
 unsigned char* generate_binary_key_string(unsigned char* key) {
 	unsigned char* binary_key_string = (unsigned char*)
-		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char));
+		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char) + 1);
 	unsigned char* binary_char_string;
 
 	for(int i = 0; i < KEY_CHAR_SIZE; i++) {
 		binary_char_string = translate_char_to_binary_string(key[i]);
 		if(i == 0) {
-			strncpy((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
+			strcpy((char*) binary_key_string, (char*) binary_char_string);
 		}
 		else{
 			strncat((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
 		}
 	}
+	binary_key_string[64] = '\0';
 
 	return binary_key_string;
 }
 
 unsigned char* generate_binary_message_string(unsigned char* message) {
 	unsigned char* binary_message_string = (unsigned char*)
-		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char));
-		unsigned char* binary_char_string;
+		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char) + 1);
+	unsigned char* binary_char_string;
 
-		for(int i = 0; i < 8; i++) {
+	for(int i = 0; i < 8; i++) {
 		binary_char_string = translate_char_to_binary_string(message[i]);
+		printf("binary char: %s\n", binary_char_string);
 		if(i == 0) {
-			strncpy((char*) binary_message_string, (char*) binary_char_string, BYTE_SIZE);
+			strcpy((char*) binary_message_string, (char*) binary_char_string);
 		}
 		else{
 			strncat((char*) binary_message_string, (char*) binary_char_string, BYTE_SIZE);
 		}
 	}
+
+	binary_message_string[64] = '\0';
+
+	printf("binary message: %s\n", binary_message_string);
 
 	return binary_message_string;
 }
@@ -300,13 +306,13 @@ unsigned char* f_function(unsigned char* right_block, unsigned char* key) {
 	s_string = s_box_function(xor_string);
 	f_string = p_function(s_string);
 
-	printf("R: %s\n", right_block);
-	printf("E: %s\n", expanded_block);
-	printf("K: %s\n", key);
-	printf("X: %s\n", xor_string);
-	printf("S: %s\n", s_string);
-	printf("F: %s\n", f_string);
-	printf("\n");
+	// printf("R: %s\n", right_block);
+	// printf("E: %s\n", expanded_block);
+	// printf("K: %s\n", key);
+	// printf("X: %s\n", xor_string);
+	// printf("S: %s\n", s_string);
+	// printf("F: %s\n", f_string);
+	// printf("\n");
 
 	free(expanded_block);
 	free(xor_string);
@@ -337,11 +343,13 @@ unsigned char* s_box_function(unsigned char* input) {
 		s_value = find_s_value(counter + 1, i, j);
 		temporary_string = translate_char_to_binary_string(s_value);
 
+		printf("temporary_string: %s\n", temporary_string);
+
 		if(counter == 0) {
-			strncpy((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE, S_OUTPUT_SIZE);
+			strcpy((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE);
 		}
 		else{
-			strncat((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE, S_OUTPUT_SIZE);
+			strcat((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE);
 		}
 	}
 
@@ -411,6 +419,12 @@ unsigned char* expansion_function(unsigned char* right_block) {
 	return expanded_block;
 }
 
-unsigned char* decrypt_message(unsigned char* message, key_structure* sub_keys) {
+key_structure* make_inverse_sub_keys(key_structure* sub_keys) {
+	key_structure* inverse_keys = malloc(17 * sizeof(key_structure));
 
+	for(int i = i; i < 17; i++) {
+		inverse_keys[i] = sub_keys[17 - i];
+	}
+
+	return inverse_keys;
 }

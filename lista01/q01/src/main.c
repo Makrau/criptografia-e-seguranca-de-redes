@@ -55,35 +55,30 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	printf("message: %s\n", message);
-	
-	printf("gerando string da chave: \n");
 	key_string = generate_binary_key_string(key);
-	printf("\ngerando string da mensagem \n");
 	message_binary_string = generate_binary_message_string(message);
 
 	sub_keys = generate_sub_keys(key_string);
+	
+	// for(int i = 1; i < 17; i++) {
+	// 	printf("K%d: %s\n", i, sub_keys[i].key);
+	// }
 
 	if(mode == ENCRYPT_MODE) {
-		printf("M: %s\n", message_binary_string);
 		unsigned char* crypted_message;
 		crypted_message = encrypt_message(message_binary_string, sub_keys);
 		fwrite(crypted_message, 1, 8, output_file);
 		fclose(output_file);
+		free(crypted_message);
 	}
 	else {
-		decrypt_message(message_binary_string, sub_keys);
+		unsigned char* decrypted_message;
+		key_structure* inverse_sub_keys = make_inverse_sub_keys(sub_keys);
+		decrypted_message = encrypt_message(message_binary_string, inverse_sub_keys);
+		fwrite(decrypted_message, 1, 8, output_file);
+		fclose(output_file);
+		free(decrypted_message);
 	}
-
-	char caractere[8];
-
-	strncpy(caractere, (char*)sub_keys[16].key, 8);
-
-	printf("caractere: %s\n", caractere);
-
-	int value = translate_binary_string_to_int(caractere);
-
-	printf("value: %d\n", value);
 
 	free(key);
 	free(key_string);
@@ -92,4 +87,3 @@ int main(int argc, char* argv[]) {
 
 	return 0;
 }
-

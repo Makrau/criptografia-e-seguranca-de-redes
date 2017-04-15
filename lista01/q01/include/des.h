@@ -43,5 +43,7 @@ int find_s_value(int counter, int i, int j);
 unsigned char* s_box_function(unsigned char* input);
 unsigned char* p_function(unsigned char* s_string);
 unsigned char* final_permutation(unsigned char* pre_output);
+key_structure* make_inverse_sub_keys(key_structure* sub_keys);
+void write_sample_message();
 
 #endif
