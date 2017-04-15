@@ -73,14 +73,14 @@ int S8[] = {13,  2,  8,  4,  6, 15, 11,  1, 10,  9,  3, 14,  5,  0, 12,  7,
 						 7, 11,  4,  1,  9, 12, 14,  2,  0,  6, 10, 13, 15,  3,  5,  8,
 						 2,  1, 14,  7,  4, 10,  8, 13, 15, 12,  9,  0,  3,  5,  6, 11};
 
-int permutation_function[] = {16,  7, 20, 21,
-															29, 12, 28, 17,
-															 1, 15, 23, 26,
-															 5, 18, 31, 10,
-															 2,  8, 24, 14,
-															32, 27,  3,  9,
-															19, 13, 30,  6,
-															22, 11,  4, 25};
+int p_table[] = { 16,  7, 20, 21,
+									29, 12, 28, 17,
+									 1, 15, 23, 26,
+									 5, 18, 31, 10,
+									 2,  8, 24, 14,
+									32, 27,  3,  9,
+									19, 13, 30,  6,
+									22, 11,  4, 25};
 
 int pc1[] =  {57, 49,  41, 33,  25,  17,  9,
 							 1, 58,  50, 42,  34,  26, 18,
@@ -132,7 +132,7 @@ unsigned char* generate_binary_key_string(unsigned char* key) {
 	unsigned char* binary_char_string;
 
 	for(int i = 0; i < KEY_CHAR_SIZE; i++) {
-		binary_char_string = translate_char_to_binary(key[i]);
+		binary_char_string = translate_char_to_binary_string(key[i]);
 		if(i == 0) {
 			strncpy((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
 		}
@@ -142,6 +142,24 @@ unsigned char* generate_binary_key_string(unsigned char* key) {
 	}
 
 	return binary_key_string;
+}
+
+unsigned char* generate_binary_message_string(unsigned char* message) {
+	unsigned char* binary_message_string = (unsigned char*)
+		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char));
+		unsigned char* binary_char_string;
+
+		for(int i = 0; i < 8; i++) {
+		binary_char_string = translate_char_to_binary_string(message[i]);
+		if(i == 0) {
+			strncpy((char*) binary_message_string, (char*) binary_char_string, BYTE_SIZE);
+		}
+		else{
+			strncat((char*) binary_message_string, (char*) binary_char_string, BYTE_SIZE);
+		}
+	}
+
+	return binary_message_string;
 }
 
 unsigned char* pc1_function(unsigned char* key_string) {
@@ -171,13 +189,13 @@ key_structure* generate_sub_keys(unsigned char* key_string) {
 	sub_keys[0].d[28] = '\0';
 
 	for(int round = 1; round < KEY_C_D_AMOUNT; round++) {
-		make_rounds(sub_keys, round);
+		make_key_rounds(sub_keys, round);
 	}
 
 	return sub_keys;
 }
 
-void make_rounds(key_structure* sub_keys, int round) {
+void make_key_rounds(key_structure* sub_keys, int round) {
 	unsigned char temporary_string[56];
 	int left_shift = key_shift_sizes[round];
 
@@ -200,4 +218,199 @@ void make_rounds(key_structure* sub_keys, int round) {
 	}
 
 	sub_keys[round].key[48] = '\0';
+}
+
+unsigned char* ip_function(unsigned char* message) {
+	unsigned char* permuted_message = malloc(64 * sizeof(char));
+
+	for(int i = 0; i < 64; i++) {
+		permuted_message[i] = message[ip[i] - 1];
+	}
+
+	return permuted_message;
+}
+
+unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys) {
+	unsigned char* initial_permutation;
+	unsigned char pre_output[64];
+	unsigned char* encrypted_message_bit_string;
+	unsigned char* encrypted_message = malloc(8 *sizeof(char));
+	unsigned char piece_string[9];
+	block_structure blocks[17];
+	initial_permutation = ip_function(message);
+	printf("I: %s\n", initial_permutation);
+
+	strncpy((char*) blocks[0].left_block, (char*)initial_permutation, HALF_BLOCK_SIZE);
+	strncpy((char*)blocks[0].right_block, (char*)initial_permutation + HALF_BLOCK_SIZE, HALF_BLOCK_SIZE);
+
+	blocks[0].left_block[32] = '\0';
+	blocks[0].right_block[32] = '\0';
+
+	for(int i = 1; i < 17; i++) {
+		printf("Round %d\n", i);
+		make_half_block_rounds(blocks, sub_keys, i);
+		printf("\n");
+	}
+
+	strcpy((char*)pre_output,(char*) blocks[16].right_block);
+	strcat((char*)pre_output,(char*) blocks[16].left_block);
+
+	encrypted_message_bit_string = final_permutation(pre_output);
+
+	for(int i = 0; i < BYTE_SIZE; i ++) {
+		strncpy((char*)piece_string, (char*)encrypted_message_bit_string + (i * BYTE_SIZE), 
+			BYTE_SIZE);
+		piece_string[8] = '\0';
+		printf("piece string: %s\n", piece_string);
+		printf("piece char: %d\n", translate_binary_string_to_int((char*)piece_string));
+		encrypted_message[i] = translate_binary_string_to_int((char*)piece_string);
+	}
+
+	free(initial_permutation);
+	
+	return encrypted_message;
+}
+
+void make_half_block_rounds(block_structure* blocks, key_structure* sub_keys, int round) {
+	unsigned char* f_string;
+	unsigned char* round_right_block;
+
+	strcpy((char*)blocks[round].left_block, (char*)blocks[round - 1].right_block);
+
+	f_string = f_function(blocks[round - 1].right_block, sub_keys[round].key);
+
+	round_right_block = string_xor(f_string, blocks[round -1].left_block);
+
+	strcpy((char*)blocks[round].right_block, (char*) round_right_block);
+
+	free(f_string);
+	free(round_right_block);
+}
+	
+	 
+
+unsigned char* f_function(unsigned char* right_block, unsigned char* key) {
+	unsigned char* expanded_block;
+	unsigned char* xor_string;
+	unsigned char* f_string;
+	unsigned char* s_string;
+
+	expanded_block = expansion_function(right_block);
+	xor_string = string_xor(expanded_block, key);
+	s_string = s_box_function(xor_string);
+	f_string = p_function(s_string);
+
+	printf("R: %s\n", right_block);
+	printf("E: %s\n", expanded_block);
+	printf("K: %s\n", key);
+	printf("X: %s\n", xor_string);
+	printf("S: %s\n", s_string);
+	printf("F: %s\n", f_string);
+	printf("\n");
+
+	free(expanded_block);
+	free(xor_string);
+	free(s_string);
+
+	return f_string;
+}
+
+unsigned char* s_box_function(unsigned char* input) {
+	unsigned char* s_string = malloc(32 * sizeof(char));
+	int i;
+	int j;
+	int s_value;
+	int bit_group_start;
+	char i_string[2];
+	char j_string[4];
+	unsigned char* temporary_string;
+
+	for(int counter = 0; counter < S_AMOUNT; counter++) {
+		bit_group_start = counter * S_BIT_GROUP;
+		i_string[0] = input[bit_group_start];
+		i_string[1] = input[bit_group_start + 5];
+		strncpy(j_string,(char*) input + (bit_group_start + 1), 4);
+
+		i = translate_binary_string_to_int(i_string);
+		j = translate_binary_string_to_int(j_string);
+
+		s_value = find_s_value(counter + 1, i, j);
+		temporary_string = translate_char_to_binary_string(s_value);
+
+		if(counter == 0) {
+			strncpy((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE, S_OUTPUT_SIZE);
+		}
+		else{
+			strncat((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE, S_OUTPUT_SIZE);
+		}
+	}
+
+	return s_string;
+}
+
+unsigned char* final_permutation(unsigned char* pre_output) {
+	unsigned char* final_string = malloc(64 * sizeof(char));
+
+	for(int i = 0; i < 64; i++) {
+		final_string[i] = pre_output[ip_inverse[i] - 1];
+	}
+
+	return final_string;
+}
+
+unsigned char* p_function(unsigned char* s_string) {
+	unsigned char* p_string = malloc(HALF_BLOCK_SIZE * sizeof(char));
+
+	for(int i = 0; i < HALF_BLOCK_SIZE; i++) {
+		p_string[i] = s_string[p_table[i] - 1];
+	}
+
+	return p_string;
+}
+int find_s_value(int counter, int i, int j) {
+	int index = ((i * 16) + j);
+
+	switch(counter) {
+		case 1:
+			return S1[index];
+
+		case 2:
+			return S2[index];
+
+		case 3:
+			return S3[index];
+
+		case 4:
+			return S4[index];
+
+		case 5:
+			return S5[index];
+
+		case 6:
+			return S6[index];
+
+		case 7:
+			return S7[index];
+
+		case 8:
+			return S8[index];
+
+		default:
+			printf("error on find_s_value!\n");
+			return -1;
+	}
+}
+
+unsigned char* expansion_function(unsigned char* right_block) {
+	unsigned char* expanded_block = malloc(EXPANDED_BLOCK_SIZE * sizeof(char));
+
+	for(int i = 0; i < EXPANDED_BLOCK_SIZE; i++) {
+		expanded_block[i] = right_block[message_expansion[i] - 1];
+	}
+
+	return expanded_block;
+}
+
+unsigned char* decrypt_message(unsigned char* message, key_structure* sub_keys) {
+
 }
