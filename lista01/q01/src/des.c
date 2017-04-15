@@ -152,7 +152,6 @@ unsigned char* generate_binary_message_string(unsigned char* message) {
 
 	for(int i = 0; i < 8; i++) {
 		binary_char_string = translate_char_to_binary_string(message[i]);
-		printf("binary char: %s\n", binary_char_string);
 		if(i == 0) {
 			strcpy((char*) binary_message_string, (char*) binary_char_string);
 		}
@@ -162,8 +161,6 @@ unsigned char* generate_binary_message_string(unsigned char* message) {
 	}
 
 	binary_message_string[64] = '\0';
-
-	printf("binary message: %s\n", binary_message_string);
 
 	return binary_message_string;
 }
@@ -244,7 +241,6 @@ unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys) 
 	unsigned char piece_string[9];
 	block_structure blocks[17];
 	initial_permutation = ip_function(message);
-	printf("I: %s\n", initial_permutation);
 
 	strncpy((char*) blocks[0].left_block, (char*)initial_permutation, HALF_BLOCK_SIZE);
 	strncpy((char*)blocks[0].right_block, (char*)initial_permutation + HALF_BLOCK_SIZE, HALF_BLOCK_SIZE);
@@ -267,8 +263,8 @@ unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys) 
 		strncpy((char*)piece_string, (char*)encrypted_message_bit_string + (i * BYTE_SIZE), 
 			BYTE_SIZE);
 		piece_string[8] = '\0';
-		printf("piece string: %s\n", piece_string);
-		printf("piece char: %d\n", translate_binary_string_to_int((char*)piece_string));
+		// printf("piece string: %s\n", piece_string);
+		// printf("piece char: %d\n", translate_binary_string_to_int((char*)piece_string));
 		encrypted_message[i] = translate_binary_string_to_int((char*)piece_string);
 	}
 
@@ -343,7 +339,7 @@ unsigned char* s_box_function(unsigned char* input) {
 		s_value = find_s_value(counter + 1, i, j);
 		temporary_string = translate_char_to_binary_string(s_value);
 
-		printf("temporary_string: %s\n", temporary_string);
+		//printf("temporary_string: %s\n", temporary_string);
 
 		if(counter == 0) {
 			strcpy((char*)s_string, (char*)temporary_string + S_OUTPUT_SIZE);
