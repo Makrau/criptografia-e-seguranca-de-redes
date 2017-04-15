@@ -91,7 +91,7 @@ int pc1[] =  {57, 49,  41, 33,  25,  17,  9,
 							14,  6,  61, 53,  45,  37, 29,
 							21, 13,   5, 28,  20,  12,  4};
 							
-int key_shift_sizes[] = {-1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
+int key_shift_sizes[] = {1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
 
 int pc2[] =  {14, 17, 11, 24,  1,  5,
 							 3, 28, 15,  6, 21, 10,
@@ -104,7 +104,7 @@ int pc2[] =  {14, 17, 11, 24,  1,  5,
 
 unsigned char* generate_key() {
 	int i;
-	unsigned char* key = (unsigned char*) malloc( KEY_SIZE * sizeof(char));
+	unsigned char* key = (unsigned char*) malloc( KEY_CHAR_SIZE * sizeof(char));
 	FILE* key_file = fopen("keyfile", "wb");
 
 	unsigned int seed = (unsigned int)time(NULL);
@@ -120,7 +120,7 @@ unsigned char* generate_key() {
 	}
 
 
-	fwrite(key, 1, KEY_SIZE, key_file);
+	fwrite(key, 1, KEY_CHAR_SIZE, key_file);
 	fclose(key_file);
 
 	return key;
@@ -128,10 +128,10 @@ unsigned char* generate_key() {
 
 unsigned char* generate_binary_key_string(unsigned char* key) {
 	unsigned char* binary_key_string = (unsigned char*)
-		malloc(KEY_SIZE * BYTE_SIZE * sizeof(char));
+		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char));
 	unsigned char* binary_char_string;
 
-	for(int i = 0; i < KEY_SIZE; i++) {
+	for(int i = 0; i < KEY_CHAR_SIZE; i++) {
 		binary_char_string = translate_char_to_binary(key[i]);
 		if(i == 0) {
 			strncpy((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
@@ -141,25 +141,20 @@ unsigned char* generate_binary_key_string(unsigned char* key) {
 		}
 	}
 
-	printf("binary key: %s\n", binary_key_string);
-
 	return binary_key_string;
 }
 
 unsigned char* pc1_function(unsigned char* key_string) {
 	unsigned char* permuted_key = (unsigned char*)
-		malloc(PERMUTED_KEY_SIZE * sizeof(char) + 1);
+		malloc(KEY_BIT_SIZE * sizeof(char) + 1);
 		int bit_position;
 
-	for(int i = 0; i < PERMUTED_KEY_SIZE; i++) {
+	for(int i = 0; i < KEY_BIT_SIZE; i++) {
 		bit_position = pc1[i];
 		permuted_key[i] = key_string[bit_position - 1];
 	}
 
 	permuted_key[56] = '\0';
-
-	printf("binary key: %s\n", key_string);
-	printf("permuted key: %s\n", permuted_key);
 
 	return permuted_key;
 }
@@ -168,17 +163,42 @@ key_structure* generate_sub_keys(unsigned char* key_string) {
 	unsigned char* permuted_key = pc1_function(key_string);
 	key_structure* sub_keys = malloc(KEY_C_D_AMOUNT * sizeof(key_structure));
 
-	strncpy((char*)sub_keys[0].key, (char*)permuted_key, PERMUTED_KEY_SIZE);
+	strncpy((char*)sub_keys[0].key, (char*)permuted_key, KEY_BIT_SIZE);
 
 	// Split permuted key into C0 and D0
-	strncpy((char*) sub_keys[0].c, (char*) sub_keys[0].key, C_D_SIZE);
+	strncpy((char*) sub_keys[0].c, (char*) sub_keys[0].key, 28);
 	strncpy((char*) sub_keys[0].d, (char*) sub_keys[0].key + C_D_SIZE, C_D_SIZE);
 
+	sub_keys[0].c[28] = '\0';
+	sub_keys[0].d[28] = '\0';
 
-
-	printf("C0: %s\n", sub_keys[0].c);
-	printf("D0: %s\n", sub_keys[0].d);
-	printf("%d \n", C_D_SIZE);
+	for(int round = 1; round < KEY_C_D_AMOUNT; round++) {
+		make_rounds(sub_keys, round);
+	}
 
 	return sub_keys;
+}
+
+void make_rounds(key_structure* sub_keys, int round) {
+	unsigned char temporary_string[56];
+	int left_shift = key_shift_sizes[round];
+
+	// making left shifts
+	for(int i = 0; i < C_D_SIZE; i++) {
+		
+		sub_keys[round].c[i] = sub_keys[round -1].c[(i+left_shift) % C_D_SIZE];
+		sub_keys[round].d[i] = sub_keys[round - 1].d[(i+left_shift) % C_D_SIZE];
+	}
+
+
+	sub_keys[round].c[28] = '\0';
+	sub_keys[round].d[28] = '\0';
+
+	strcpy((char*)temporary_string, (char*)sub_keys[round].c);
+	strcat((char*)temporary_string, (char*)sub_keys[round].d);
+
+	// making permutation 2
+	for(int i = 0; i < PC2_SIZE; i++) {
+		sub_keys[round].key[i] = temporary_string[pc2[i] - 1];
+	}
 }
