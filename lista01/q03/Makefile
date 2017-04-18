@@ -41,3 +41,6 @@ dist-clean: clean
 	@echo Limpando com dist-clean
 	@rm -f $(TARGET)
 	@rm -rf $(BIN_DIR)
+
+run:
+	@./$(BIN_DIR)/$(NAME)
