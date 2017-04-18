@@ -6,8 +6,9 @@
 
 void usage(){
   printf("How to Use:\n"
-      "Insert two numbers(0 <= x >= 255)\n"
-      "And the desired operation(+, -, /, *)\n\n");
+      "Insert one number(0 <= x >= 255)\n"
+      "The desired operation(+, -, /, *)\n"
+      "And the second number(0 <= x >= 255)\n\n");
 }
 
 long decimal_binary(long n) {
@@ -39,4 +40,22 @@ long gf_xor(long a, long b){
   long result;
   result= a ^ b;
   return result;
+}
+
+long gf_mult(long a, long b){
+  long result = 0;
+  while (b) {
+    if (b & 1)
+      result ^= a;
+    if (a & 128)
+      a = (a << 1) ^ 283;
+    else
+      a <<= 1;
+    b >>= 1;
+  }
+  return result;
+}
+
+long gf_div(long a, long b){
+
 }

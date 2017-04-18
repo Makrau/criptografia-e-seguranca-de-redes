@@ -10,17 +10,18 @@ int main(int argc, char* argv[]) {
 
   long a, b;
   char op;
-  scanf("%ld %ld %c", &a, &b, &op);
+  scanf("%ld %c %ld", &a, &op, &b);
 
   while((a < 0) || (a > 255) || (b < 0) || (b > 255)){
     usage();
-    scanf("%ld %ld %c", &a, &b, &op);
+    scanf("%ld %c %ld", &a, &op, &b);
   }
 
   if ((op == '+') || (op == '-')){
     printf("%ld\n", gf_xor(a, b));
   }
   else if (op == '*'){
+    printf("%ld\n", gf_mult(a, b));
   }
   else if (op == '/'){
   }
