@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
 	int number;
 	int module;
 
-	printf("Digite o valor do número: \n");
+	printf("Digite o valor do número que você quer achar o inverso: \n");
 	scanf("%d", &number);
 	printf("Digite o valor do modulo: \n");
 	scanf("%d", &module);

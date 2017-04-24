@@ -5,6 +5,9 @@
 
 int find_inverse_multiplicative(int number, int module) {
 	division_struct* header = malloc(sizeof(division_struct));
+	division_struct* tail = get_tail(header);
+	header->previous = NULL;
+
 	if(number > module) {
 		number = number % module;
 		printf("numero dentro do modulo: %d\n", number);
@@ -20,7 +23,7 @@ int find_inverse_multiplicative(int number, int module) {
 		printf("numero POSSUI inverso multiplicativo\n");
 	}
 
-	printf("GCD: %d\n", gcd);
+	//calculate_inverse(tail, module);
 	print_list(header);
 
 	return 0;
@@ -51,6 +54,8 @@ int extended_euclidean_algorithm(int a, int b, division_struct* node) {
 		}
 		else {
 			next = malloc(sizeof(division_struct));
+			next->previous = node;
+
 			node->next = next;
 		}
 
@@ -70,3 +75,32 @@ void print_list(division_struct* header) {
 		current_node = current_node->next;
 	}
 }
+
+division_struct* get_tail(division_struct* header) {
+	division_struct* current_node = header;
+	while(current_node->next != NULL) {
+		current_node = current_node->next;
+	}
+
+	return current_node;
+}
+
+/*int calculate_inverse(division_struct* node, int module, int number) {
+	int current_number = node->number;
+	int current_quotient = - (node->quotient);
+	int current_divisor = node->divisor;
+
+	if(node->number == module) {
+		if(current_divisor == number){
+			return current_quotient;
+		}
+		else {
+			printf("problema ao calcular inverso....\n");
+		}
+	}
+	else {
+		if(node->number == number) {
+			return 
+		}
+	}
+}*/
