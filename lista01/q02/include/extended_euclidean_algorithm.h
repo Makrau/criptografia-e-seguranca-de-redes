@@ -1,7 +1,16 @@
 #ifndef EXTENDED_EUCLIDEAN_ALGORITHM_H
 #define EXTENDED_EUCLIDEAN_ALGORITHM_H
 
-int extended_euclidean_algorithm(int a, int b);
+typedef struct _division_struct{
+	int number;
+	int divisor;
+	int quotient;
+	int remainder;
+	struct _division_struct* next;
+} division_struct;
+
+int extended_euclidean_algorithm(int a, int b, division_struct* node);
 int find_inverse_multiplicative(int number, int module);
+void print_list(division_struct* header);
 
 #endif
