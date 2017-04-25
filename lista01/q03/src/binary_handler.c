@@ -57,5 +57,14 @@ long gf_mult(long a, long b){
 }
 
 long gf_div(long a, long b){
+  long aux = -1, mult, r;
+  for (int i = 0; i <= 256; ++i) {
+    mult = gf_mult(b, i);
+    if((mult % 27) == 1){
+      r = i;
+      break;
+    }
+  }
 
+  return gf_mult(a, r);
 }

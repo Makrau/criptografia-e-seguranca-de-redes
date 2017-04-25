@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
     printf("%ld\n", gf_mult(a, b));
   }
   else if (op == '/'){
+    printf("%ld\n", gf_div(a, b));
   }
   else
     printf("Unknown Operation\n");
