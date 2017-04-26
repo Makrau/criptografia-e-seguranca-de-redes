@@ -19,16 +19,14 @@ int find_inverse_multiplicative(int number, int module) {
 	second->y = 1;
 	second->previous = first;
 
-
-	if(number > module) {
-		number = number % module;
-		printf("numero dentro do modulo: %d\n", number);
-	}
-
 	gcd = extended_euclidean_algorithm(module, number, second);
+
+	printf("GCD: %d\n", gcd);
 
 	if(gcd != 1) {
 		printf("numero NÃO possui inverso multiplicativo!\n");
+
+		print_list(first);
 		return 0;
 	}
 	else {
@@ -36,7 +34,7 @@ int find_inverse_multiplicative(int number, int module) {
 			tail = get_tail(first);
 		inverse_multiplicative = get_inverse(tail->y, module);
 
-		//print_list(first);
+		print_list(first);
 		printf("Inverso multiplicativo de %d no módulo %d: %d\n",
 			number, module, inverse_multiplicative);
 	}
@@ -75,8 +73,8 @@ void print_list(extended_struct* header) {
 	extended_struct* current = header;
 
 	while(current != NULL) {
-		printf("M: %d\t", current->x);
-		printf("N: %d\n", current->y);
+		printf("X: %d\t", current->x);
+		printf("Y: %d\n", current->y);
 		current = current->next;
 	}
 }
