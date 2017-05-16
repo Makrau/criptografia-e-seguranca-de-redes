@@ -11,6 +11,7 @@ int validate_arguments(int argc, char* argv[], des_config* config) {
 	}
 
 	get_algorithm_mode(argv, config, &valid_arguments);
+	get_input_and_output_files(argv, config, &valid_arguments);
 
 	return valid_arguments;
 
@@ -54,6 +55,16 @@ void get_algorithm_mode(char* argv[], des_config* config, int* valid_arguments) 
 	}
 	else {
 		printf("Invalid algorithm mode. Use -e to encrypt or -d to decrypt.\n");
+		*valid_arguments = INVALID_ARGUMENTS;
+	}
+}
+
+void get_input_and_output_files(char* argv[], des_config* config, int* valid_arguments) {
+	config->input_file = fopen(argv[INPUT_FILE_ARGUMENT_POSITION], "rb");	
+	config->output_file = fopen(argv[OUTPUT_FILE_ARGUMENT_POSITION], "wb");
+
+	if(!config->input_file) {
+		printf("Input file not found!\n");
 		*valid_arguments = INVALID_ARGUMENTS;
 	}
 }

@@ -9,5 +9,12 @@ int main(int argc, char* argv[]) {
 	des_config* config = malloc(sizeof(des_config));
 
 	valid_arguments = validate_arguments(argc, argv, config);
+
+	if(config->input_file) {
+		fclose(config->input_file);
+	}
+	fclose(config->output_file);
+
+	free(config);
 	return 0;
 }

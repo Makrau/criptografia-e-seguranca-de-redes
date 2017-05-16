@@ -14,5 +14,6 @@ int validate_arguments(int argc, char* argv[], des_config* config);
 void invalid_number_of_arguments();
 void tips();
 void get_algorithm_mode(char* argv[], des_config* config, int* valid_arguments);
+void get_input_and_output_files(char* argv[], des_config* config, int* valid_arguments);
 
 #endif
