@@ -1,23 +1,19 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "arguments_handler.h"
 
-#define ARGUMENTS_OK 0
-#define ARGUMENTS_NOT_OK 1
-#define NUMBER_OF_ARGUMENTS 5
-#define ENCRYPTION_MODE_ARGUMENT_POSITON 1
-#define AES_KEY_SIZE_MODE_ARGUMENT_POSITION 2
-#define INPUT_FILE_ARGUMENT_POSITION 3
-#define OUTPUT_FILE_ARGUMENT_POSITION 4
-
-int validate_arguments(int argc, char* argv[]) {
-	
+int validate_arguments(int argc, char* argv[], aes_config* config) {
+	int valid_arguments = VALID_ARGUMENTS;
 	if(argc < NUMBER_OF_ARGUMENTS) {
 		invalid_number_of_arguments();
-		return ARGUMENTS_NOT_OK;
+		return INVALID_ARGUMENTS;
 	}
 
-	return ARGUMENTS_OK;
+	get_algorithm_mode(argv, config, &valid_arguments);
+	get_key_size(argv, config, &valid_arguments);
+
+	return valid_arguments;
 
 }
 
@@ -43,4 +39,48 @@ void tips() {
 	printf("size correspondent to the key size mode argument (the second argument)\n");
 	printf("One must use the same keyfile to encrypt and decrypt to get the algorithm");
 	printf("to work properly.\n");
+}
+
+void get_algorithm_mode(char* argv[], aes_config* config, int* valid_arguments) {
+	int encryption_mode;
+	int decryption_mode;
+	char* argument_mode = argv[ENCRYPTION_MODE_ARGUMENT_POSITON];
+
+	encryption_mode = strcmp("-d", argument_mode);
+	decryption_mode = strcmp("-e", argument_mode);
+
+	if(encryption_mode == 0) {
+		config->algorithm_mode = ENCRYPTION_MODE;
+	}
+	else if(decryption_mode == 0) {
+		config->algorithm_mode = DECRYPTION_MODE;
+	}
+	else {
+		printf("Invalid algorithm mode. Use -e to encrypt or -d to decrypt.\n");
+		*valid_arguments = INVALID_ARGUMENTS;
+	}
+}
+
+void get_key_size(char* argv[], aes_config* config, int* valid_arguments) {
+	int aes128;
+	int aes192;
+	int aes256;
+
+	aes128 = strcmp("128", argv[AES_KEY_SIZE_MODE_ARGUMENT_POSITION]);
+	aes192 = strcmp("192", argv[AES_KEY_SIZE_MODE_ARGUMENT_POSITION]);
+	aes256 = strcmp("256", argv[AES_KEY_SIZE_MODE_ARGUMENT_POSITION]);
+
+	if(aes128 == 0) {
+		config->key_size = 128;
+	}
+	else if(aes192 == 0) {
+		config->key_size = 192;
+	}
+	else if(aes256 == 0) {
+		config->key_size = 256;
+	}
+	else {
+		printf("Invalid key size. Key size must be 128, 192 or 256.\n");
+		*valid_arguments = INVALID_ARGUMENTS;
+	}
 }

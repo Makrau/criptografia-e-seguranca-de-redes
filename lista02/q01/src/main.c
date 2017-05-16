@@ -8,7 +8,8 @@
 
 int main(int argc, char* argv[]) {
 	int valid_arguments;
-	valid_arguments = validate_arguments(argc, argv);
+	aes_config* config = malloc(sizeof(aes_config));
+	valid_arguments = validate_arguments(argc, argv, config);
 
 	return 0;
 }
