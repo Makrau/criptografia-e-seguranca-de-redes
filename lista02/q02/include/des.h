@@ -1,8 +1,8 @@
 #ifndef _DES_H_
 #define _DES_H_
 
-#define ENCRYPT_MODE 1
-#define DECRYPT_MODE 0
+#define ENCRYPTION_MODE 0
+#define DECRYPTION_MODE 1
 #define KEY_CHAR_SIZE 8
 #define BYTE_SIZE 8
 #define PC1_SIZE 56
@@ -26,6 +26,12 @@ typedef struct {
 	unsigned char left_block[HALF_BLOCK_SIZE + 1];
 	unsigned char right_block[HALF_BLOCK_SIZE + 1];
 }block_structure;
+
+typedef struct {
+	int algorithm_mode;
+	FILE* input_file;
+	FILE* output_file;
+} des_config;
 
 unsigned char* generate_key();
 unsigned char* generate_binary_key_string(unsigned char* key);
