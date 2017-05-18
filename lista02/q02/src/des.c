@@ -5,6 +5,8 @@
 
 #include "des.h"
 #include "binary_handler.h"
+#include "key_handler.h"
+#include "config.h"
 
 int ip[] = {58, 50, 42, 34, 26, 18, 10, 2,
 						60, 52, 44, 36, 28, 20, 12, 4,
@@ -102,69 +104,6 @@ int pc2[] =  {14, 17, 11, 24,  1,  5,
 							44, 49, 39, 56, 34, 53,
 							46, 42, 50, 36, 29, 32};
 
-unsigned char* generate_key() {
-	int i;
-	unsigned char* key = (unsigned char*) malloc( KEY_CHAR_SIZE * sizeof(char));
-	FILE* key_file = fopen("keyfile", "wb");
-
-	unsigned int seed = (unsigned int)time(NULL);
-	srand (seed);
-
-	if (!key_file) {
-		printf("Problems opening the keyfile");
-		return NULL;
-	}
-
-	for (i=0; i<8; i++) {
-		key[i] = rand()%255;
-	}
-
-
-	fwrite(key, 1, KEY_CHAR_SIZE, key_file);
-	fclose(key_file);
-
-	return key;
-}
-
-unsigned char* generate_binary_key_string(unsigned char* key) {
-	unsigned char* binary_key_string = (unsigned char*)
-		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char) + 1);
-	unsigned char* binary_char_string;
-
-	for(int i = 0; i < KEY_CHAR_SIZE; i++) {
-		binary_char_string = translate_char_to_binary_string(key[i]);
-		if(i == 0) {
-			strcpy((char*) binary_key_string, (char*) binary_char_string);
-		}
-		else{
-			strncat((char*) binary_key_string, (char*) binary_char_string, BYTE_SIZE);
-		}
-	}
-	binary_key_string[64] = '\0';
-
-	return binary_key_string;
-}
-
-unsigned char* generate_binary_message_string(unsigned char* message) {
-	unsigned char* binary_message_string = (unsigned char*)
-		malloc(KEY_CHAR_SIZE * BYTE_SIZE * sizeof(char) + 1);
-	unsigned char* binary_char_string;
-
-	for(int i = 0; i < 8; i++) {
-		binary_char_string = translate_char_to_binary_string(message[i]);
-		if(i == 0) {
-			strcpy((char*) binary_message_string, (char*) binary_char_string);
-		}
-		else{
-			strncat((char*) binary_message_string, (char*) binary_char_string, BYTE_SIZE);
-		}
-	}
-
-	binary_message_string[64] = '\0';
-
-	return binary_message_string;
-}
-
 unsigned char* pc1_function(unsigned char* key_string) {
 	unsigned char* permuted_key = (unsigned char*)
 		malloc(PC1_SIZE * sizeof(char) + 1);
@@ -180,9 +119,11 @@ unsigned char* pc1_function(unsigned char* key_string) {
 	return permuted_key;
 }
 
-key_structure* generate_sub_keys(unsigned char* key_string) {
+key_structure* generate_sub_keys(unsigned char* key) {
+	unsigned char* key_string = generate_binary_key_string(key);
 	unsigned char* permuted_key = pc1_function(key_string);
 	key_structure* sub_keys = malloc(KEY_C_D_AMOUNT * sizeof(key_structure));
+
 
 	// Split permuted key into C0 and D0
 	strncpy((char*) sub_keys[0].c, (char*) permuted_key, 28);
@@ -194,6 +135,10 @@ key_structure* generate_sub_keys(unsigned char* key_string) {
 	for(int round = 1; round < KEY_C_D_AMOUNT; round++) {
 		make_key_rounds(sub_keys, round);
 	}
+
+	free(key);
+	free(key_string);
+	free(permuted_key);
 
 	return sub_keys;
 }
@@ -233,15 +178,29 @@ unsigned char* ip_function(unsigned char* message) {
 	return permuted_message;
 }
 
-unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys) {
+unsigned char* des_algorithm(unsigned char* message, int mode, unsigned char* key) {
 	unsigned char* initial_permutation;
-	unsigned char pre_output[64];
+	unsigned char pre_output[65];
 	unsigned char* encrypted_message_bit_string;
 	unsigned char* encrypted_message = malloc(8 *sizeof(char));
 	unsigned char piece_string[9];
 	block_structure blocks[17];
-	initial_permutation = ip_function(message);
+	unsigned char* message_binary_string;
 
+	message_binary_string = generate_binary_message_string(message);
+
+	key_structure* sub_keys = generate_sub_keys(key);
+
+	if(mode == DECRYPTION_MODE) {
+		key_structure* aux = sub_keys;
+		sub_keys = make_inverse_sub_keys(sub_keys);
+		free(aux);
+		//debug_keys(aux, sub_keys);
+	}
+
+	initial_permutation = ip_function(message_binary_string);
+
+	// Divide the inital permutation in the first left block and right block
 	strncpy((char*) blocks[0].left_block, (char*)initial_permutation, HALF_BLOCK_SIZE);
 	strncpy((char*)blocks[0].right_block, (char*)initial_permutation + HALF_BLOCK_SIZE, HALF_BLOCK_SIZE);
 
@@ -249,13 +208,12 @@ unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys) 
 	blocks[0].right_block[32] = '\0';
 
 	for(int i = 1; i < 17; i++) {
-		printf("Round %d\n", i);
 		make_half_block_rounds(blocks, sub_keys, i);
-		printf("\n");
 	}
 
 	strcpy((char*)pre_output,(char*) blocks[16].right_block);
 	strcat((char*)pre_output,(char*) blocks[16].left_block);
+	pre_output[64] = '\0';
 
 	encrypted_message_bit_string = final_permutation(pre_output);
 
@@ -263,8 +221,6 @@ unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys) 
 		strncpy((char*)piece_string, (char*)encrypted_message_bit_string + (i * BYTE_SIZE), 
 			BYTE_SIZE);
 		piece_string[8] = '\0';
-		// printf("piece string: %s\n", piece_string);
-		// printf("piece char: %d\n", translate_binary_string_to_int((char*)piece_string));
 		encrypted_message[i] = translate_binary_string_to_int((char*)piece_string);
 	}
 
@@ -277,8 +233,10 @@ void make_half_block_rounds(block_structure* blocks, key_structure* sub_keys, in
 	unsigned char* f_string;
 	unsigned char* round_right_block;
 
-	strcpy((char*)blocks[round].left_block, (char*)blocks[round - 1].right_block);
+	strncpy((char*)blocks[round].left_block, (char*)blocks[round - 1].right_block,
+	 HALF_BLOCK_SIZE);
 
+	blocks[round].left_block[HALF_BLOCK_SIZE] = '\0';
 	f_string = f_function(blocks[round - 1].right_block, sub_keys[round].key);
 
 	round_right_block = string_xor(f_string, blocks[round -1].left_block);
@@ -302,14 +260,6 @@ unsigned char* f_function(unsigned char* right_block, unsigned char* key) {
 	s_string = s_box_function(xor_string);
 	f_string = p_function(s_string);
 
-	// printf("R: %s\n", right_block);
-	// printf("E: %s\n", expanded_block);
-	// printf("K: %s\n", key);
-	// printf("X: %s\n", xor_string);
-	// printf("S: %s\n", s_string);
-	// printf("F: %s\n", f_string);
-	// printf("\n");
-
 	free(expanded_block);
 	free(xor_string);
 	free(s_string);
@@ -323,15 +273,17 @@ unsigned char* s_box_function(unsigned char* input) {
 	int j;
 	int s_value;
 	int bit_group_start;
-	char i_string[2];
-	char j_string[4];
+	char i_string[3];
+	char j_string[5];
 	unsigned char* temporary_string;
 
 	for(int counter = 0; counter < S_AMOUNT; counter++) {
 		bit_group_start = counter * S_BIT_GROUP;
 		i_string[0] = input[bit_group_start];
 		i_string[1] = input[bit_group_start + 5];
+		i_string[2] = '\0';
 		strncpy(j_string,(char*) input + (bit_group_start + 1), 4);
+		j_string[4] = '\0';
 
 		i = translate_binary_string_to_int(i_string);
 		j = translate_binary_string_to_int(j_string);
@@ -353,21 +305,25 @@ unsigned char* s_box_function(unsigned char* input) {
 }
 
 unsigned char* final_permutation(unsigned char* pre_output) {
-	unsigned char* final_string = malloc(64 * sizeof(char));
+	unsigned char* final_string = malloc(65 * sizeof(char));
 
 	for(int i = 0; i < 64; i++) {
 		final_string[i] = pre_output[ip_inverse[i] - 1];
 	}
 
+	final_string[64] = '\0';
+
 	return final_string;
 }
 
 unsigned char* p_function(unsigned char* s_string) {
-	unsigned char* p_string = malloc(HALF_BLOCK_SIZE * sizeof(char));
+	unsigned char* p_string = malloc(HALF_BLOCK_SIZE * sizeof(char) + 1);
 
 	for(int i = 0; i < HALF_BLOCK_SIZE; i++) {
 		p_string[i] = s_string[p_table[i] - 1];
 	}
+
+	p_string[HALF_BLOCK_SIZE] = '\0';
 
 	return p_string;
 }
@@ -406,21 +362,32 @@ int find_s_value(int counter, int i, int j) {
 }
 
 unsigned char* expansion_function(unsigned char* right_block) {
-	unsigned char* expanded_block = malloc(EXPANDED_BLOCK_SIZE * sizeof(char));
+	unsigned char* expanded_block = malloc(EXPANDED_BLOCK_SIZE * sizeof(char) + 1);
 
 	for(int i = 0; i < EXPANDED_BLOCK_SIZE; i++) {
 		expanded_block[i] = right_block[message_expansion[i] - 1];
 	}
 
+	expanded_block[EXPANDED_BLOCK_SIZE] = '\0';
 	return expanded_block;
 }
 
 key_structure* make_inverse_sub_keys(key_structure* sub_keys) {
 	key_structure* inverse_keys = malloc(17 * sizeof(key_structure));
 
-	for(int i = i; i < 17; i++) {
+	for(int i = 1; i < 17; i++) {
 		inverse_keys[i] = sub_keys[17 - i];
 	}
 
 	return inverse_keys;
+}
+
+void debug_keys(key_structure* original_keys, key_structure* inverse_keys) {
+	int i = 0;
+	for(i = 0; i < 17; i ++) {
+		printf("###### Keys %d ######\n", i);
+		printf("OK: %s\n", original_keys[i].key);
+		printf("IK: %s\n",inverse_keys[i].key);
+		printf("\n");
+	}
 }
