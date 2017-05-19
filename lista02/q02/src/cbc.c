@@ -23,16 +23,35 @@ void run_cbc(config* config) {
 	unsigned char* message = malloc(8 * sizeof(char));
 	unsigned char* key;
 	unsigned char* algorithm_result;
+	int flag = 1;
 
 	//Searching for keyfile. If not found, generate a new key.
 	key = read_key();
 
 	if(config->input_file) {
-		fread(message, sizeof(char), 8, config->input_file);
-		fclose(config->input_file);
-		algorithm_result = des_algorithm(message, config->algorithm_mode, key);
-		fwrite(algorithm_result, sizeof(char), 8, config->output_file);
-		fclose(config->output_file);
+		while(flag){
+			size_t bytes_read = fread(message, sizeof(char), 8, config->input_file);
+			
+			if(feof(config->input_file)){
+				//printf("Hit final of the file!\n");
+				//printf("Bytes read: %d\n", (int)bytes_read);
+				if(bytes_read == 0) {
+					return;
+				}
+				if(bytes_read != 8) {
+					//process_final_message(message);
+					return;
+				}
+				fclose(config->input_file);
+				fclose(config->output_file);
+				flag = 0;
+			}
+
+			//printf("M: %s\n", message);
+			algorithm_result = des_algorithm(message, config->algorithm_mode, key);
+			fwrite(algorithm_result, sizeof(char), 8, config->output_file);
+		}
+		
 	}
 	else {
 		printf("Error on run_cbc!\n");
@@ -56,4 +75,8 @@ unsigned char* read_key() {
 	}
 
 	return key;
-} 
+}
+
+void process_final_message(unsigned char* message) {
+
+}
