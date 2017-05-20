@@ -6,7 +6,8 @@
 #include "key_handler.h"
 #include "des.h"
 
-unsigned char initialization_vector[8] = "InitVect";
+unsigned char initialization_vector[8] = {(char)233, (char)122, (char)212, (char)167,
+ (char)122, (char)187, (char)200};
 
 unsigned char* cbc_pre_process(unsigned char* message, unsigned char* previous_ciphertext) {
 	unsigned char* pre_message_processed = malloc(CHAR_BIT_SIZE * sizeof(char) + 1);
@@ -18,7 +19,6 @@ unsigned char* cbc_pre_process(unsigned char* message, unsigned char* previous_c
 	}
 
 	pre_message_processed[9] = '\0';
-
 
 	return pre_message_processed;
 }
