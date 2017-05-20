@@ -1,18 +1,18 @@
 #include "galois_arithmetic.h"
 
-long gf_xor(long a, long b){
-  long result;
+uint8_t gf_xor(uint8_t a, uint8_t b){
+  uint8_t result;
   result= a ^ b;
   return result;
 }
 
-long gf_mult(long a, long b){
-  long result = 0;
+uint8_t gf_mult(uint8_t a, uint8_t b){
+  uint8_t result = 0;
   while (b) {
     if (b & 1)
       result ^= a;
-    if (a & 128)
-      a = (a << 1) ^ 283;
+    if (a & 0x80)
+      a = (a << 1) ^ 0x11b;
     else
       a <<= 1;
     b >>= 1;
@@ -20,9 +20,9 @@ long gf_mult(long a, long b){
   return result;
 }
 
-long gf_div(long a, long b){
-  long r = -1, mult;
-  for (int i = 0; i <= 256; ++i) {
+uint8_t gf_div(uint8_t a, uint8_t b){
+  uint8_t r = -1, mult;
+  for (int i = 0; i <= 255; ++i) {
     mult = gf_mult(b, i);
     if((mult % 27) == 1){
       r = i;
