@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include "cbc.h"
 #include "binary_handler.h"
@@ -7,26 +8,33 @@
 
 unsigned char initialization_vector[8] = "InitVect";
 
-unsigned char* process_first_block(unsigned char* first_block_message) {
-	unsigned char* first_message_processed = malloc(CHAR_BIT_SIZE * sizeof(char) + 1);
+unsigned char* cbc_pre_process(unsigned char* message, unsigned char* previous_ciphertext) {
+	unsigned char* pre_message_processed = malloc(CHAR_BIT_SIZE * sizeof(char) + 1);
 	int i = 0;
-	for(i = 0; i < 9; i++) {
-		first_message_processed[i] = (first_block_message[i] ^ initialization_vector[i]);
+	unsigned char xor_char;
+	for(i = 0; i < 8; i++) {
+		xor_char = message[i] ^ previous_ciphertext[i];
+		pre_message_processed[i] = xor_char;
 	}
 
-	first_message_processed[9] = '\0';
+	pre_message_processed[9] = '\0';
 
-	return first_message_processed;
+
+	return pre_message_processed;
 }
 
 void run_cbc(config* config) {
 	unsigned char* message = malloc(8 * sizeof(char));
 	unsigned char* key;
 	unsigned char* algorithm_result;
+	unsigned char* previous_ciphertext = malloc(9 * sizeof(char));
+	unsigned char* cbc_pre_processed_message;
 	int flag = 1;
 
 	//Searching for keyfile. If not found, generate a new key.
 	key = read_key();
+	strncpy((char*)previous_ciphertext, (char*)initialization_vector, 8);
+	previous_ciphertext[8] = '\0';
 
 	if(config->input_file) {
 		while(flag){
@@ -48,14 +56,33 @@ void run_cbc(config* config) {
 			}
 
 			//printf("M: %s\n", message);
-			algorithm_result = des_algorithm(message, config->algorithm_mode, key);
-			fwrite(algorithm_result, sizeof(char), 8, config->output_file);
+			if(config->algorithm_mode == ENCRYPTION_MODE){
+				cbc_pre_processed_message = cbc_pre_process(message, previous_ciphertext);
+				algorithm_result = des_algorithm(cbc_pre_processed_message, config->algorithm_mode,
+					key);
+				fwrite(algorithm_result, sizeof(char), 8, config->output_file);
+				strncpy((char*)previous_ciphertext, (char*)algorithm_result, 8);
+				previous_ciphertext[8] = '\0';
+			}
+			else if(config->algorithm_mode == DECRYPTION_MODE){
+				algorithm_result = des_algorithm(message, config->algorithm_mode, key);
+				cbc_pre_processed_message = cbc_pre_process(algorithm_result, previous_ciphertext);
+				fwrite(cbc_pre_processed_message, sizeof(char), 8, config->output_file);
+				strncpy((char*)previous_ciphertext, (char*)message, 8);
+				previous_ciphertext[8] = '\0';
+			}
+			else {
+				printf("Error! Invalid algorithm_mode!\n");
+				return;
+			}
+			free(cbc_pre_processed_message);
+			free(algorithm_result);
 		}
-		
 	}
 	else {
 		printf("Error on run_cbc!\n");
 		printf("Input file invalid!\n");
+		return;
 	}
 
 	free(key);
