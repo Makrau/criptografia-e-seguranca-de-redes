@@ -1,4 +1,4 @@
-NAME = lista02_q01
+NAME = aes
 
 SRC_DIR = src
 INC_DIR = include
