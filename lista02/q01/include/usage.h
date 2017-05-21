@@ -9,10 +9,10 @@ const char* const short_options = "he:d:";
 
 /* An array describing valid long options. */
 const struct option long_options[] = {
-  { "help",     0, NULL, 'h' },
-  { "encrypt",  1, NULL, 'e' },
-  { "decrypt",  1, NULL, 'd' },
-  { NULL,       0, NULL, 0   }   /* Required at end of array. */
+  { "help",     no_argument,       NULL, 'h' },
+  { "encrypt",  required_argument, NULL, 'e' },
+  { "decrypt",  required_argument, NULL, 'd' },
+  { NULL,       no_argument,       NULL, 0   }   /* Required at end of array. */
 };
 
 /* Name of the file that indicate program input. */
