@@ -3,7 +3,7 @@
 
 #include "arguments_handler.h"
 
-int validate_arguments(int argc, char* argv[], aes_config* config) {
+int validate_arguments(int argc, char* argv[], config* config) {
 	int valid_arguments = VALID_ARGUMENTS;
 	if(argc < NUMBER_OF_ARGUMENTS) {
 		invalid_number_of_arguments();
@@ -31,7 +31,7 @@ void invalid_number_of_arguments() {
 
 void tips() {
 	printf("Notice that during encrypt the input file should be your plaintext, "); 
-		printf("and the output file will be the correspondent ciphertext.\n");
+	printf("and the output file will be the correspondent ciphertext.\n");
 	printf("But, during decryption, the input file must be the ciphertext, ");
 	printf("and the output file will be the correspondent plaintext.\n");
 	printf("The program will also search for a file called 'keyfile' to use as key.");
@@ -41,7 +41,7 @@ void tips() {
 	printf("to work properly.\n");
 }
 
-void get_algorithm_mode(char* argv[], aes_config* config, int* valid_arguments) {
+void get_algorithm_mode(char* argv[], config* config, int* valid_arguments) {
 	int encryption_mode;
 	int decryption_mode;
 	char* argument_mode = argv[ENCRYPTION_MODE_ARGUMENT_POSITON];
@@ -61,7 +61,7 @@ void get_algorithm_mode(char* argv[], aes_config* config, int* valid_arguments) 
 	}
 }
 
-void get_key_size(char* argv[], aes_config* config, int* valid_arguments) {
+void get_key_size(char* argv[], config* config, int* valid_arguments) {
 	int aes128;
 	int aes192;
 	int aes256;
