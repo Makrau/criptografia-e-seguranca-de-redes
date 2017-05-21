@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <unistd.h>
-#include <string.h>
+#include <fcntl.h>
 
 #include "galois_arithmetic.h"
 #include "usage.h"
@@ -14,8 +14,7 @@ int main(int argc, char* argv[]) {
   program_name = argv[0];
 
   do {
-    next_option = getopt_long(argc, argv, short_options,
-        long_options, NULL);
+    next_option = getopt_long(argc, argv, short_options, long_options, NULL);
     switch (next_option)
     {
       case 'h':   /* -h or --help */
@@ -37,7 +36,7 @@ int main(int argc, char* argv[]) {
       case '?':   /* The user specified an invalid option.  */
         print_usage (stderr, 1, program_name);
 
-      case -1:    /* Done with options.  */
+      case -1:    /* All options processed.  */
         break;
 
       default:    /* Something else: unexpected.  */
@@ -50,6 +49,10 @@ int main(int argc, char* argv[]) {
     print_usage (stdout, 0, program_name);
     return 1;
   }
+
+  int fd = open("teste.txt", O_WRONLY | O_APPEND);
+  printf("%d\n", fd);
+  write(fd, "teste", 100);
 
   return 0;
 }
