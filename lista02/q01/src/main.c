@@ -1,15 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
+#include <unistd.h>
 #include <string.h>
 
-#include "binary_handler.h"
-#include "aes.h"
-#include "arguments_handler.h"
+#include "galois_arithmetic.h"
+#include "usage.h"
+
+const char* program_name;
 
 int main(int argc, char* argv[]) {
-	int valid_arguments;
-	aes_config* config = malloc(sizeof(aes_config));
-	valid_arguments = validate_arguments(argc, argv, config);
 
-	return 0;
+  program_name = argv[0];
+
+  do {
+    next_option = getopt_long(argc, argv, short_options,
+        long_options, NULL);
+    switch (next_option)
+    {
+      case 'h':   /* -h or --help */
+        print_usage (stdout, 0, program_name);
+
+      case 'e':   /* -e or --encrypt */
+        /* This option takes an argument, the name of the output file.  */
+        e_mode = 1;
+        input_filename = optarg;
+        output_filename = "encrypted_message";
+        break;
+
+      case 'd':   /* -d or --decrypt */
+        d_mode = 1;
+        input_filename = optarg;
+        output_filename = "decrypted_message";
+        break;
+
+      case '?':   /* The user specified an invalid option.  */
+        print_usage (stderr, 1, program_name);
+
+      case -1:    /* Done with options.  */
+        break;
+
+      default:    /* Something else: unexpected.  */
+        exit(1);
+    }
+  }
+  while (next_option != -1);
+
+  if(argc == 1 || optind == 1){
+    print_usage (stdout, 0, program_name);
+    return 1;
+  }
+
+  return 0;
 }
