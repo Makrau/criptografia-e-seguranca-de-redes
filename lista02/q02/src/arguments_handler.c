@@ -2,8 +2,9 @@
 #include <string.h>
 
 #include "arguments_handler.h"
+#include "config.h"
 
-int validate_arguments(int argc, char* argv[], des_config* config) {
+int validate_arguments(int argc, char* argv[], config* config) {
 	int valid_arguments = VALID_ARGUMENTS;
 	if(argc < NUMBER_OF_ARGUMENTS) {
 		invalid_number_of_arguments();
@@ -11,6 +12,7 @@ int validate_arguments(int argc, char* argv[], des_config* config) {
 	}
 
 	get_algorithm_mode(argv, config, &valid_arguments);
+	get_input_and_output_files(argv, config, &valid_arguments);
 
 	return valid_arguments;
 
@@ -38,13 +40,13 @@ void tips() {
 	printf("to work properly.\n");
 }
 
-void get_algorithm_mode(char* argv[], des_config* config, int* valid_arguments) {
+void get_algorithm_mode(char* argv[], config* config, int* valid_arguments) {
 	int encryption_mode;
 	int decryption_mode;
 	char* argument_mode = argv[ENCRYPTION_MODE_ARGUMENT_POSITON];
 
-	encryption_mode = strcmp("-d", argument_mode);
-	decryption_mode = strcmp("-e", argument_mode);
+	encryption_mode = strcmp("-e", argument_mode);
+	decryption_mode = strcmp("-d", argument_mode);
 
 	if(encryption_mode == 0) {
 		config->algorithm_mode = ENCRYPTION_MODE;
@@ -54,6 +56,16 @@ void get_algorithm_mode(char* argv[], des_config* config, int* valid_arguments) 
 	}
 	else {
 		printf("Invalid algorithm mode. Use -e to encrypt or -d to decrypt.\n");
+		*valid_arguments = INVALID_ARGUMENTS;
+	}
+}
+
+void get_input_and_output_files(char* argv[], config* config, int* valid_arguments) {
+	config->input_file = fopen(argv[INPUT_FILE_ARGUMENT_POSITION], "rb");	
+	config->output_file = fopen(argv[OUTPUT_FILE_ARGUMENT_POSITION], "wb");
+
+	if(!config->input_file) {
+		printf("Input file not found!\n");
 		*valid_arguments = INVALID_ARGUMENTS;
 	}
 }

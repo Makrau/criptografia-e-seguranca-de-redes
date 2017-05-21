@@ -1,8 +1,6 @@
 #ifndef _DES_H_
 #define _DES_H_
 
-#define ENCRYPTION_MODE 0
-#define DECRYPTION_MODE 1
 #define KEY_CHAR_SIZE 8
 #define BYTE_SIZE 8
 #define PC1_SIZE 56
@@ -27,21 +25,13 @@ typedef struct {
 	unsigned char right_block[HALF_BLOCK_SIZE + 1];
 }block_structure;
 
-typedef struct {
-	int algorithm_mode;
-	FILE* input_file;
-	FILE* output_file;
-} des_config;
-
 unsigned char* generate_key();
 unsigned char* generate_binary_key_string(unsigned char* key);
-unsigned char* generate_binary_message_string(unsigned char* message);
 unsigned char* pc1_function(unsigned char* key_string);
 key_structure* generate_sub_keys(unsigned char* key_string);
 void make_key_rounds(key_structure* sub_keys, int round);
 void make_half_block_rounds(block_structure* blocks, key_structure* sub_keys, int round);
-unsigned char* encrypt_message(unsigned char* message, key_structure* sub_keys);
-unsigned char* decrypt_message(unsigned char* message, key_structure* sub_keys);
+unsigned char* des_algorithm(unsigned char* message, int mode, unsigned char* key);
 unsigned char* ip_function(unsigned char* message);
 unsigned char* f_function(unsigned char* right_block, unsigned char* key);
 unsigned char* expansion_function(unsigned char* right_block);
@@ -51,5 +41,6 @@ unsigned char* p_function(unsigned char* s_string);
 unsigned char* final_permutation(unsigned char* pre_output);
 key_structure* make_inverse_sub_keys(key_structure* sub_keys);
 void write_sample_message();
+void debug_keys(key_structure* original_keys, key_structure* inverse_keys);
 
 #endif

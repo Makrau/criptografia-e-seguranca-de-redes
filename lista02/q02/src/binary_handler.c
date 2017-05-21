@@ -30,6 +30,9 @@ unsigned int translate_binary_string_to_int(char* input) {
 		if(input[i] == '1') {
 			value += pow(2, input_size - (i + 1));
 		}
+		else if(input[i] != '0')  {
+			printf("Wrong value on translate_binary_string_to_int!\n");
+		}
 	}
 
 	return value;
@@ -61,4 +64,25 @@ unsigned char* string_xor(unsigned char* word1, unsigned char* word2) {
 		printf("Word2: %s\n", word2);
 		return NULL;
 	}
+}
+
+unsigned char* generate_binary_message_string(unsigned char* message) {
+	int message_size = strlen((char*)message);
+	unsigned char* binary_message_string = (unsigned char*)
+		malloc(message_size * CHAR_BIT_SIZE * sizeof(char) + 1);
+	unsigned char* binary_char_string;
+
+	for(int i = 0; i < 8; i++) {
+		binary_char_string = translate_char_to_binary_string(message[i]);
+		if(i == 0) {
+			strcpy((char*) binary_message_string, (char*) binary_char_string);
+		}
+		else{
+			strncat((char*) binary_message_string, (char*) binary_char_string, CHAR_BIT_SIZE);
+		}
+	}
+
+	binary_message_string[message_size * CHAR_BIT_SIZE] = '\0';
+
+	return binary_message_string;
 }
