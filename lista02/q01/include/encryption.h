@@ -1,6 +1,6 @@
 #ifndef ENCRYPTION_H
 #define ENCRYPTION_H
 
-#include "file_manipulate.h"
+void encrypt(char *plaintex, char *key);
 
 #endif

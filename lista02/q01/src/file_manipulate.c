@@ -11,8 +11,8 @@ char* read_from_file(const char* filename){
   fd = fopen(filename, "r");
 
   while((ch=fgetc(fd)) != EOF){
-    if(ch == '\n' || ch == ' ')
-      s[c] = '*';
+    if(ch == '\n')
+      s[c] = ' ';
     else
       s[c] = ch;
     c++;
@@ -37,7 +37,6 @@ char *append_plaintext(char* plaintext){
     plaintext = (char *) realloc(plaintext, (plaintext_size+mod) * sizeof(char));
     if(plaintext == NULL){
       printf("Sem espaço suficiente\n");
-      exit;
     }
     for(i = plaintext_size; i < plaintext_size + mod; ++i){
       plaintext[i] = '*';

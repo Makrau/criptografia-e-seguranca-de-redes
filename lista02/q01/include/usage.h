@@ -16,10 +16,10 @@ const struct option long_options[] = {
 };
 
 /* Name of the file that indicate program input. */
-const char* input_filename = NULL;
+char* input_filename = NULL;
 
 /* Name of the file to receive program output, or NULL for standard output. */
-const char* output_filename = NULL;
+char* output_filename = NULL;
 
 int e_mode = 0;
 

@@ -5,8 +5,10 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include "galois_arithmetic.h"
 #include "usage.h"
+#include "encryption.h"
+#include "decryption.h"
+#include "key_handler.h"
 
 const char* program_name;
 
@@ -57,13 +59,9 @@ int main(int argc, char* argv[]) {
   /* write(fd, s, 64); */
   /* close(fd); */
 
-  char *plaintext = read_from_file(input_filename);
-  printf("%s\n", plaintext);
-  printf("%d\n", strlen(plaintext));
+  char *key = generate_key(16);
+  encrypt(input_filename, key);
 
-  plaintext = append_plaintext(plaintext);
-  printf("%s\n", plaintext);
-  printf("%d\n", strlen(plaintext));
 
   return 0;
 }
