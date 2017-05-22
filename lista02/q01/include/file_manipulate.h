@@ -3,4 +3,6 @@
 
 char* read_from_file (const char* filename);
 
+char* append_plaintext(char* plaintext);
+
 #endif

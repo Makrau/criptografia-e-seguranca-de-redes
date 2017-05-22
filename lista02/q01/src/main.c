@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include "galois_arithmetic.h"
 #include "usage.h"
@@ -50,9 +51,19 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  int fd = open("teste.txt", O_WRONLY | O_APPEND);
-  printf("%d\n", fd);
-  write(fd, "teste", 100);
+  /* int fd = open(output_filename, O_WRONLY | O_CREAT | O_TRUNC, 0777); */
+  /* printf("%d\n", fd); */
+  /* char *s = "slkfjlsdjflsajflsdjflskdjflksdjflksjddttototott\0"; */
+  /* write(fd, s, 64); */
+  /* close(fd); */
+
+  char *plaintext = read_from_file(input_filename);
+  printf("%s\n", plaintext);
+  printf("%d\n", strlen(plaintext));
+
+  plaintext = append_plaintext(plaintext);
+  printf("%s\n", plaintext);
+  printf("%d\n", strlen(plaintext));
 
   return 0;
 }
