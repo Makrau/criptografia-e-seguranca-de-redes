@@ -24,7 +24,7 @@ unsigned char* cbc_pre_process(unsigned char* message, unsigned char* previous_c
 }
 
 void run_cbc(config* config) {
-	unsigned char* message = malloc(8 * sizeof(char));
+	unsigned char* message = malloc(9 * sizeof(char));
 	unsigned char* key;
 	unsigned char* algorithm_result;
 	unsigned char* previous_ciphertext = malloc(9 * sizeof(char));
@@ -39,19 +39,16 @@ void run_cbc(config* config) {
 	if(config->input_file) {
 		while(flag){
 			size_t bytes_read = fread(message, sizeof(char), 8, config->input_file);
+			message[bytes_read] = '\0';
 			
 			if(feof(config->input_file)){
-				//printf("Hit final of the file!\n");
-				//printf("Bytes read: %d\n", (int)bytes_read);
 				if(bytes_read == 0) {
 					return;
 				}
 				if(bytes_read != 8) {
-					//process_final_message(message);
-					return;
+					message = append_plaintext(message);
 				}
 				fclose(config->input_file);
-				fclose(config->output_file);
 				flag = 0;
 			}
 
@@ -78,6 +75,8 @@ void run_cbc(config* config) {
 			free(cbc_pre_processed_message);
 			free(algorithm_result);
 		}
+		fclose(config->output_file);
+
 	}
 	else {
 		printf("Error on run_cbc!\n");
@@ -104,6 +103,29 @@ unsigned char* read_key() {
 	return key;
 }
 
-void process_final_message(unsigned char* message) {
-
+unsigned char *append_plaintext(unsigned char* plaintext){
+  int plaintext_size, mod, i;
+  plaintext_size = strlen((char*)plaintext);
+  mod = DES_BLOCK_BYTE_SIZE - (plaintext_size % DES_BLOCK_BYTE_SIZE);
+  // printf("message to be appended: %s\n", plaintext);
+  // printf("size: %d\n", plaintext_size); 
+  // printf("mod: %d\n", mod); 
+  if(mod == DES_BLOCK_BYTE_SIZE){
+  	//printf("not appending...\n");
+    return plaintext;
+  }
+  else{
+    plaintext = (unsigned char *) realloc(plaintext, (plaintext_size+mod) * sizeof(char));
+    if(plaintext == NULL){
+      printf("Sem espaço suficiente\n");
+      return NULL;
+    }
+    for(i = plaintext_size; i < plaintext_size + mod; ++i){
+      plaintext[i] = '*';
+    }
+    plaintext[i] = '\0';
+    plaintext_size = strlen((char*)plaintext);
+    //printf("plaintext final size: %d\n", plaintext_size); 
+    return plaintext;
+  }
 }

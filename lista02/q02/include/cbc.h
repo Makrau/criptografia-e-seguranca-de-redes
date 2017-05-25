@@ -8,7 +8,7 @@
 
 unsigned char* cbc_pre_process(unsigned char* message, unsigned char* previous_ciphertext);
 void run_cbc(config* config);
-void process_final_message(unsigned char* message);
+unsigned char *append_plaintext(unsigned char* plaintext);
 unsigned char* read_key();
 
 #endif
