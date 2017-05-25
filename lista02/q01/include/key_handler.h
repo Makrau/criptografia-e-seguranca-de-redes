@@ -3,7 +3,6 @@
 
 #define BYTE_SIZE 8
 
-unsigned char* generate_key();
-unsigned char* generate_binary_key_string(unsigned char* key);
+char* generate_key();
 
 #endif
