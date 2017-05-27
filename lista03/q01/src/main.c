@@ -1,4 +1,5 @@
 #include "libusage.h"
+#include "libtruerand.h"
 
 const char* program_name;
 
@@ -37,5 +38,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  printf("%d\n", true_rand_number());
   return 0;
 }
