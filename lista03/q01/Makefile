@@ -21,9 +21,9 @@ all:
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo construindo o objeto $@
-	@echo comando: 
-	@echo $(CC) -c $(CFLAGS) -I$(INC_DIR) $< -o $@
-	$(CC) -c $(CFLAGS) -I$(INC_DIR) $< -o $@
+	@echo comando:
+	@echo $(CC) -c $(CFLAGS) -I $(INC_DIR) $< -o $@
+	$(CC) -c $(CFLAGS) -I $(INC_DIR) $< -o $@
 
 $(TARGET): $(OBJ)
 	@echo criando executável
