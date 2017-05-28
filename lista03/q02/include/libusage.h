@@ -20,4 +20,10 @@ extern char *param;
 
 extern int input_n;
 
+extern int input_k;
+
+extern int n_flag;
+
+extern int k_flag;
+
 #endif

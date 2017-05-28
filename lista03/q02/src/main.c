@@ -1,5 +1,5 @@
 #include "libusage.h"
-#include "libtruerand.h"
+#include "libmiller_rabin.h"
 
 const char* program_name;
 
@@ -14,9 +14,18 @@ int main(int argc, char* argv[]) {
       case 'h':   /* -h or --help */
         print_usage (stdout, 0, program_name);
 
-      case 'd':   /* -d or --determine */
+      case 'n':   /* -n or --number */
         param = optarg;
         input_n = atoi(param);
+        /* miller_rabin(input_n); */
+        n_flag = 1;
+        break;
+
+      case 'k':   /* -k or --accuracy */
+        param = optarg;
+        input_k = atoi(param);
+        /* miller_rabin(input_n); */
+        k_flag = 1;
         break;
 
       case '?':   /* The user specified an invalid option.  */
@@ -31,11 +40,15 @@ int main(int argc, char* argv[]) {
   }
   while (next_option != -1);
 
-  if(argc == 1 || optind == 1){
+  if(argc == 1 || optind == 1 || n_flag == 0){
     print_usage (stdout, 0, program_name);
     return 1;
   }
 
-  printf("%d\n", input_n);
+    if (is_prime(input_n, input_k))
+      printf("N=%d Is prime\n", input_n);
+    else
+      printf("N=%d Is Composite\n", input_n);
+
   return 0;
 }
