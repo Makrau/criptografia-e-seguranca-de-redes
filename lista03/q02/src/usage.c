@@ -1,7 +1,7 @@
 #include "libusage.h"
 
 void print_usage (FILE* stream, int exit_code, const char* program_name){
-  fprintf (stream, "\nUsage:  %s [options]... param...\n", program_name);
+  fprintf (stream, "\nUsage:  %s [option] [param]\n", program_name);
   fprintf (stream,
            "  {-h  --help}                       Display this usage information.\n"
            "  {-d  --determine} [param]          Determine if a param is prime.\n"
@@ -21,3 +21,7 @@ const struct option long_options[] = {
 };
 
 int next_option;
+
+char *param = NULL;
+
+int input_n;

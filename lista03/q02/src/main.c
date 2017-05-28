@@ -15,6 +15,8 @@ int main(int argc, char* argv[]) {
         print_usage (stdout, 0, program_name);
 
       case 'd':   /* -d or --determine */
+        param = optarg;
+        input_n = atoi(param);
         break;
 
       case '?':   /* The user specified an invalid option.  */
@@ -34,5 +36,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  printf("%d\n", input_n);
   return 0;
 }

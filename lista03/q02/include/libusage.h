@@ -16,4 +16,8 @@ extern const struct option long_options[];
 
 extern int next_option;
 
+extern char *param;
+
+extern int input_n;
+
 #endif
