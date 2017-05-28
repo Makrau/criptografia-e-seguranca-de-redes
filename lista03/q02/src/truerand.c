@@ -1,10 +1,10 @@
 #include "libtruerand.h"
 
-int true_rand_number(){
+int true_rand_number(int p){
 
   static int dev_random_fd = -1;
-  int min = 0;
-  int max = INT_MAX;
+  int min = 2; //because 1 < a < p
+  int max = p - 1;
 
   char* next_random_byte;
   int bytes_to_read;
@@ -13,7 +13,7 @@ int true_rand_number(){
   assert (max > min);
 
   if (dev_random_fd == -1) {
-    dev_random_fd = open ("/dev/random", O_RDONLY);
+    dev_random_fd = open ("/dev/urandom", O_RDONLY);
     assert (dev_random_fd != -1);
   }
 
@@ -28,14 +28,4 @@ int true_rand_number(){
   } while (bytes_to_read > 0);
 
   return min + (random_value % (max - min + 1));
-}
-
-int *generate_key(int key_size){
-  int *key = (int*) malloc(key_size * sizeof(int));
-  int i;
-  for(i = 0; i < key_size; ++i){
-    key[i] = true_rand_number();
-  }
-
-  return key;
 }
