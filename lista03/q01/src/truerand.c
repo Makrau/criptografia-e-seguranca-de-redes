@@ -29,3 +29,13 @@ int true_rand_number(){
 
   return min + (random_value % (max - min + 1));
 }
+
+int *generate_key(int key_size){
+  int *key = (int*) malloc(key_size * sizeof(int));
+  int i;
+  for(i = 0; i < key_size; ++i){
+    key[i] = true_rand_number();
+  }
+
+  return key;
+}

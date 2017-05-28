@@ -7,6 +7,9 @@ int main(int argc, char* argv[]) {
 
   program_name = argv[0];
 
+  int *key, key_size = 10;
+  key = generate_key(key_size);
+
   do {
     next_option = getopt_long(argc, argv, short_options, long_options, NULL);
     switch (next_option)
@@ -38,6 +41,5 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  printf("%d\n", true_rand_number());
   return 0;
 }
