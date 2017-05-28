@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 
       case 'n':   /* -n or --number */
         param = optarg;
-        input_n = atoi(param);
+        input_n = atoll(param);
         /* miller_rabin(input_n); */
         n_flag = 1;
         break;
@@ -46,9 +46,9 @@ int main(int argc, char* argv[]) {
   }
 
     if (is_prime(input_n, input_k))
-      printf("N=%d Is prime\n", input_n);
+      printf("N=%lld Is prime\n", input_n);
     else
-      printf("N=%d Is Composite\n", input_n);
+      printf("N=%lld Is Composite\n", input_n);
 
   return 0;
 }

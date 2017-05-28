@@ -18,7 +18,7 @@ extern int next_option;
 
 extern char *param;
 
-extern int input_n;
+extern unsigned long long int input_n;
 
 extern int input_k;
 

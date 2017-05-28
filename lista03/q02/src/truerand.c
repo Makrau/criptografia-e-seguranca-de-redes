@@ -1,31 +1,17 @@
 #include "libtruerand.h"
 
-int true_rand_number(int p){
+unsigned long long int true_rand_number(unsigned long long int p){
 
-  static int dev_random_fd = -1;
-  int min = 2; //because 1 < a < p
-  int max = p - 1;
-
-  char* next_random_byte;
-  int bytes_to_read;
-  unsigned random_value;
+  int min = 2; //because 1 < a < p - 1
+  unsigned long long int max = p - 1;
+  unsigned long long int random_value;
+  FILE *fd;
 
   assert (max > min);
 
-  if (dev_random_fd == -1) {
-    dev_random_fd = open ("/dev/urandom", O_RDONLY);
-    assert (dev_random_fd != -1);
-  }
-
-  next_random_byte = (char*) &random_value;
-  bytes_to_read = sizeof (random_value);
-
-  do {
-    int bytes_read;
-    bytes_read = read (dev_random_fd, next_random_byte, bytes_to_read);
-    bytes_to_read -= bytes_read;
-    next_random_byte += bytes_read;
-  } while (bytes_to_read > 0);
+  fd = fopen("/dev/urandom", "r");
+  fread(&random_value, sizeof(random_value), 1, fd);
+  fclose(fd);
 
   return min + (random_value % (max - min + 1));
 }

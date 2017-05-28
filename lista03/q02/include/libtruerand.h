@@ -6,6 +6,4 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int true_rand_number(int p);
-
-extern int key_size;
+unsigned long long int true_rand_number(unsigned long long int p);

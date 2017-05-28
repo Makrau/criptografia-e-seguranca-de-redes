@@ -5,8 +5,8 @@
 
 int power(int x, unsigned int y, int p);
 
-int miller_rabin(int d, int n);
+int miller_rabin(int d, unsigned long long int n);
 
-int is_prime(int n, int k);
+int is_prime(unsigned long long int n, int k);
 
 #endif

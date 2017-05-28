@@ -15,8 +15,9 @@ int power(int x, unsigned int y, int p){
   return res;
 }
 
-int miller_rabin(int d, int n){
-  int a, x;
+int miller_rabin(int d, unsigned long long int n){
+  unsigned long long int a;
+  int x;
 
   a = true_rand_number(n);
 
@@ -38,9 +39,9 @@ int miller_rabin(int d, int n){
   return 0;
 }
 
-int is_prime(int n, int k){
+int is_prime(unsigned long long int n, int k){
   // Corner cases
-  if (n <= 1 || n == 4)
+  if (n <= 1 || n == 4 || (n % 2) == 0)
     return 0;
   if (n <= 3)
     return 1;

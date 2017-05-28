@@ -27,7 +27,7 @@ int next_option;
 
 char *param = NULL;
 
-int input_n;
+unsigned long long int input_n;
 
 int input_k = 10;
 
