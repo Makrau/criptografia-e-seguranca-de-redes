@@ -39,7 +39,6 @@ int miller_rabin(int d, int n){
 }
 
 int is_prime(int n, int k){
-  // Corner cases
   if (n <= 1 || n == 4)
     return 0;
   if (n <= 3)

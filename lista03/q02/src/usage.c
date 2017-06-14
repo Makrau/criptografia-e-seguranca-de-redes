@@ -4,8 +4,8 @@ void print_usage (FILE* stream, int exit_code, const char* program_name){
   fprintf (stream, "\nUsage:  %s -[option] [param] ...\n", program_name);
   fprintf (stream,
            "  {-h  --help}                       Display this usage information.\n"
-           "  {-n  --number} [param]             A number to be determined if is prime.\n"
-           "  {-k  --accuracy} [param]           The result accuracy desired.\n"
+           "  {-n  --number} [number]             A number < 2147483647 to be determined if is prime.\n"
+           "  {-k  --accuracy} [rounds]           The result accuracy desired.\n"
            "                                         Default values is 10 rounds.\n"
            "                                                                    \n");
   exit (exit_code);
