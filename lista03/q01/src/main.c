@@ -1,45 +1,32 @@
-#include "libusage.h"
 #include "libtruerand.h"
+#include "rc4.h"
+#include "key_handler.h"
 
-const char* program_name;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char* argv[]) {
+	int stream_size = atoi(argv[1]);
+	printf("size: %d\n", stream_size);
+	FILE* keyfile = fopen("keyfile", "rb");
+	FILE* output = fopen("keystream.data", "wb");
+	unsigned char* key;
 
-  program_name = argv[0];
-
-  int *key, key_size = 10;
-  key = generate_key(key_size);
-
-  do {
-    next_option = getopt_long(argc, argv, short_options, long_options, NULL);
-    switch (next_option)
-    {
-      case 'h':   /* -h or --help */
-        print_usage (stdout, 0, program_name);
-
-      case 'g':   /* -g or --generate */
-        break;
-
-      case 'f':   /* -f or --file */
-        /* This option takes an argument, the name of the output file.  */
-        break;
-
-      case '?':   /* The user specified an invalid option.  */
-        print_usage (stderr, 1, program_name);
-
-      case -1:    /* All options processed.  */
-        break;
-
-      default:    /* Something else: unexpected.  */
-        exit(1);
-    }
-  }
-  while (next_option != -1);
-
-  if(argc == 1 || optind == 1){
-    print_usage (stdout, 0, program_name);
-    return 1;
-  }
+	if(keyfile) {
+		printf("keyfile found.\n");
+		key = read_key(keyfile);
+	}
+	else {
+		printf("keyfile not found. Generating key....\n");
+		key = (unsigned char*)generate_key(16);
+		keyfile = fopen("keyfile", "wb");
+		fwrite(key, sizeof(char), strlen((char*)key), keyfile);
+	}
+	
+	printf("key: %s\n", key);
+	unsigned char* keystream = generate_keystream(stream_size, key);
+	fwrite(keystream, sizeof(char), stream_size, output);
 
   return 0;
 }

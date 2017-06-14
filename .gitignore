@@ -3,6 +3,7 @@
 DES-master/
 lista01/q01/keyfile
 *.zip
+lista03/q01/sts-2.1.2/
 
 # Object files
 *.o
