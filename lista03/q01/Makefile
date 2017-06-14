@@ -1,4 +1,4 @@
-NAME = prng
+NAME = rc4
 
 SRC_DIR = src
 INC_DIR = include
