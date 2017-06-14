@@ -40,13 +40,15 @@ int main(int argc, char* argv[]) {
   }
   while (next_option != -1);
 
-  if(argc == 1 || optind == 1 || n_flag == 0){
+  if(argc == 1 || optind == 1 || n_flag == 0 || input_n > 2147483647 || input_n < 0){
     print_usage (stdout, 0, program_name);
     return 1;
   }
 
-    if (is_prime(input_n, input_k))
-      printf("N=%d Is prime\n", input_n);
+  if (is_prime(input_n, input_k)){
+    printf("N=%d Is prime\n", input_n);
+    probability(input_k);
+  }
     else
       printf("N=%d Is Composite\n", input_n);
 

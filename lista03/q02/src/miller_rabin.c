@@ -1,4 +1,12 @@
 #include "libmiller_rabin.h"
+#include <math.h>
+
+void probability(int input_k){
+  double p;
+  p = pow(0.25, input_k);
+  p *= 100;
+  printf("With probability p~=%.2f%%\n", 100 - p);
+}
 
 int power(int x, unsigned int y, int p){
   int res = 1;
