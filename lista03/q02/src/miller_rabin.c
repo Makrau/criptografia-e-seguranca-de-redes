@@ -1,4 +1,12 @@
 #include "libmiller_rabin.h"
+#include <math.h>
+
+void probability(int input_k){
+  double p;
+  p = pow(0.25, input_k);
+  p *= 100;
+  printf("With probability p~=%.2f%%\n", 100 - p);
+}
 
 int power(int x, unsigned int y, int p){
   int res = 1;
@@ -39,9 +47,8 @@ int miller_rabin(int d, unsigned long long int n){
   return 0;
 }
 
-int is_prime(unsigned long long int n, int k){
-  // Corner cases
-  if (n <= 1 || n == 4 || (n % 2) == 0)
+int is_prime(int n, int k){
+  if (n <= 1 || n == 4)
     return 0;
   if (n <= 3)
     return 1;

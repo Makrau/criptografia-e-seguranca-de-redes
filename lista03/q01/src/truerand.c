@@ -36,8 +36,9 @@ int *generate_key(int key_size){
   for(i = 0; i < key_size; i++){
     key[i] = true_rand_number();
   }
+
   key[i] = '\n';
   key[i+1] = '\0';
-
+  
   return key;
 }

@@ -21,7 +21,6 @@ int main(int argc, char* argv[]) {
 		printf("keyfile not found. Generating key....\n");
 		key = (unsigned char*)generate_key(16);
 		keyfile = fopen("keyfile", "wb");
-		printf("tamanho da key: %d\n", (int)strlen((char*)key));
 		fwrite(key, sizeof(char), strlen((char*)key), keyfile);
 		fwrite("\n", sizeof(char), 1, keyfile);
 	}

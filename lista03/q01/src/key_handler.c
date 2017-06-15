@@ -11,14 +11,10 @@ unsigned char* read_key(FILE* keyfile) {
 	unsigned char read_char = EOF;
 
 	while(read_char) {
-		printf("reading key. Position: %d\n", (int)position);
 		read_char = getc(keyfile);
-		printf("readed char: %c\n", read_char);
-		printf("current key: %s\n", key);
 
 		if(read_char == EOF || read_char == '\n' || read_char == '\0') {
 			key[position] = '\0';
-			printf("Entrou no if!!!!\n");
 			return key;
 		}
 

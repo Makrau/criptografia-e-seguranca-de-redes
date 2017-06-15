@@ -3,6 +3,8 @@
 
 #include "libtruerand.h"
 
+void probability(int input_k);
+
 int power(int x, unsigned int y, int p);
 
 int miller_rabin(int d, unsigned long long int n);
