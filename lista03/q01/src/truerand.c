@@ -31,12 +31,13 @@ int true_rand_number(){
 }
 
 int *generate_key(int key_size){
-  int *key = (int*) malloc((key_size + 1) * sizeof(int));
+  int *key = (int*) malloc((key_size + 2) * sizeof(int));
   int i;
   for(i = 0; i < key_size; i++){
     key[i] = true_rand_number();
   }
-  key[i] = '\0';
+  key[i] = '\n';
+  key[i+1] = '\0';
 
   return key;
 }
