@@ -1,13 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "extended_euclidean_algorithm.h"
+
+#include "argument_handler.h"
+#include "config.h"
 
 int main(int argc, char* argv[]) {
-	int a = atoi(argv[1]);
-	int b = atoi(argv[2]);
+	config* config = malloc(sizeof(config));
+	int valid_arguments = verify_arguments(argc, argv, config);
 
-	int gcd = extended_euclidean_algorithm(a, b);
-
-	printf("GCD: %d\n", gcd);
+	if(valid_arguments == VALID) {
+		printf("tudo certo\n");
+	}
+	else{
+		printf("tá tudo errado...\n");
+	}
+	
 	return 0;
 }
