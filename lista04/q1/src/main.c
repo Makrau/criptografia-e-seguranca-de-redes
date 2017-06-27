@@ -20,11 +20,7 @@ int main(int argc, char* argv[]) {
 		}
 		else {
 			ciphertext = read_ciphertext(config->input_file);
-			int i;
-			int size = sizeof(ciphertext) / sizeof(int);
-			for(i = 0; i < size; i++) {
-				printf("C:%d\n", ciphertext[i]);
-			}
+			
 		}
 	}
 	else{

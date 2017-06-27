@@ -38,33 +38,25 @@ char* read_text_file(FILE* file) {
 }
 
 unsigned int* read_ciphertext(FILE* file) {
-	unsigned int* ciphertext = NULL;
-	unsigned int* aux_pointer = NULL;
-	size_t string_size = 0;
+	fseek(file, 0L, SEEK_END);
+	long int file_size = ftell(file);
+	long unsigned int number_of_elements = (long unsigned int)file_size / sizeof(int);
+	rewind(file);
+	printf("Numero de elementos: %lu\n", number_of_elements);
+
+	unsigned int* ciphertext = malloc(number_of_elements* (sizeof(unsigned int)));
 	size_t position = 0;
 	unsigned int read_number = 1;
 
-	while(read_number) {
+	while(position < number_of_elements) {
 		fread(&read_number, sizeof(int), 1, file);
 		printf("readed: %d\n", read_number);
 
-		if(read_number == '\n' || read_number == '\0') {
+		if(read_number == '\0') {
 			ciphertext[position] = '\0';
 			return ciphertext;
 		}
 
-		if(string_size <= position) {
-			string_size++;
-			aux_pointer = realloc(ciphertext, string_size);
-
-			if(!aux_pointer) {
-				printf("Error on realloc!\n");
-				free(ciphertext);
-				return NULL;
-			}
-
-			ciphertext = aux_pointer;
-		}
 		ciphertext[position] = read_number;
 		position++;
 	}
