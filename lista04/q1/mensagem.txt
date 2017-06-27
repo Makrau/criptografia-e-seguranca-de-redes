@@ -1,0 +1,1 @@
+Mensagem a ser cifrada.

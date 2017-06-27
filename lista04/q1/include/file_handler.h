@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 
-unsigned char* read_file(FILE* file);
+char* read_file(FILE* file);
+void clear_buffer();
 
 #endif

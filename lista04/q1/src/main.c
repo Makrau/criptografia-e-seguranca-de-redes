@@ -4,6 +4,7 @@
 #include "argument_handler.h"
 #include "config.h"
 #include "rsa.h"
+#include "file_handler.h"
 
 int main(int argc, char* argv[]) {
 	config* config = malloc(sizeof(config));
@@ -12,6 +13,8 @@ int main(int argc, char* argv[]) {
 
 	if(valid_arguments == VALID) {
 		get_additional_data(config);
+		message = read_file(config->input_file);
+		printf("Mensagem: %s\n", message);
 	}
 	else{
 		printf("tá tudo errado...\n");

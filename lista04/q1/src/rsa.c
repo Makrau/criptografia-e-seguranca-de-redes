@@ -1,6 +1,7 @@
 #include "rsa.h"
 #include "mathematical_functions.h"
 #include "config.h"
+#include "file_handler.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +38,11 @@ void get_algorithm_mode(config* config) {
 
 
 void get_input_path(config* config) {
-
+	char* input_path;
+	printf("Digite o caminho do arquivo de entrada: \n");
+	clear_buffer();
+	input_path = read_file(stdin);
+	config->input_file = fopen(input_path, "rb");
 }
 
 void print_algorithm_modes() {

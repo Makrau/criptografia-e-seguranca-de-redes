@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-unsigned char* read_file(FILE* file) {
-	unsigned char* message = NULL;
-	unsigned char* aux_pointer = NULL;
+char* read_file(FILE* file) {
+	char* message = NULL;
+	char* aux_pointer = NULL;
 	size_t string_size = 0;
 	size_t position = 0;
-	unsigned char read_char = EOF;
+	int read_char = EOF;
 
 	while(read_char) {
 		read_char = getc(file);
@@ -35,4 +35,10 @@ unsigned char* read_file(FILE* file) {
 	}
 
 	return message;
+}
+
+void clear_buffer() {
+	int c;
+	while((c = fgetc(stdin)) != '\n' && c != EOF);
+	return;
 }
