@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "mathematical_functions.h"
 
@@ -91,4 +92,20 @@ int get_inverse(int inverse, int module) {
 	}
 
 	return inverse;
+}
+
+int modular_power(int number, int power, int module) {
+	printf("number: %d\n", number);
+	printf("power: %d\n", power);
+	printf("module: %d\n", module);
+	int result = 1;
+	int counter = 0;
+
+	for(counter = 0; counter <= power; counter++) {
+		result = (result * number) % module;
+	}
+
+	result = result % module;
+
+	return result;
 }

@@ -1,52 +1,28 @@
 #include "rsa.h"
-#include "mathematical_functions.h"
 #include "config.h"
-#include "file_handler.h"
+#include "mathematical_functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-void get_additional_data(config* config) {
-	get_private_key(config);
-	get_algorithm_mode(config);
-	get_input_path(config);
+void encrypt_rsa(char* message, config* config) {
+	int n = (config->p) * (config->q);
+	int message_lenght = strlen((char*)message);
+	int i = 0;
+
+	for(i = 0; i < message_lenght; i++) {
+		printf("M: %d\n", message[i]);
+	}
+
+	unsigned int* result = malloc(message_lenght * sizeof(int));
+	printf("Tamanho da mensagem: %d\n", message_lenght);
+
+	for(i = 0; i < message_lenght; i++) {
+		result[i] = (unsigned int)modular_power(message[i], config->public_key, n);
+		printf("Result: %d\n", result[i]);
+	}
+	config-> output_file = fopen("output_file", "wb");
+	fwrite(result, sizeof(int), message_lenght, config->output_file);
 }
 
-void get_private_key(config* config) {
-	int private_key;
-	int phi = phi_n(config->p, config->q);
-	private_key = find_inverse_multiplicative(config->public_key, phi);
-	config->private_key = private_key;
-	printf("private key: %d\n", private_key);
-}
-
-void get_algorithm_mode(config* config) {
-	int algorithm_mode;
-	do {
-		print_algorithm_modes();
-		scanf("%d", &algorithm_mode);
-
-		if(algorithm_mode == ENCRYPTION_MODE || algorithm_mode == DECRYPTION_MODE) {
-			config->algorithm_mode = algorithm_mode;
-			break;
-		}
-		else {
-			printf("Modo escolhido inválido! Digite 1 ou 2 para escolher os modos disponíveis.\n");
-		}
-	} while(1);
-}
-
-
-void get_input_path(config* config) {
-	char* input_path;
-	printf("Digite o caminho do arquivo de entrada: \n");
-	clear_buffer();
-	input_path = read_file(stdin);
-	config->input_file = fopen(input_path, "rb");
-}
-
-void print_algorithm_modes() {
-	printf("Escolha a ação desejada: \n");
-	printf("1) Cifração\n");
-	printf("2) Decifração\n");
-}

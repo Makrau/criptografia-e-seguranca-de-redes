@@ -43,6 +43,9 @@ int verify_public_key(int public_key_e, config* config) {
 			return VALID;
 		}
 		else {
+			printf("GCD: %d\n", gcd);
+			printf("public key: %d\n", public_key);
+			printf("phi: %d\n", phi);
 			printf("Chave publica inválida!\n");
 			printf("digite uma nova chave pública: \n");
 			scanf("%d", &public_key);

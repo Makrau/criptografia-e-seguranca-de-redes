@@ -15,5 +15,6 @@ int recursive_step(int a, int b, extended_struct* previous);
 int phi_n(int p, int q);
 extended_struct* get_tail(extended_struct* header);
 int get_inverse(int inverse, int module);
+int modular_power(int number, int power, int module);
 
 #endif

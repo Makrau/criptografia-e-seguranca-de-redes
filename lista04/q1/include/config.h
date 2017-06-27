@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-#define ENCRYPTION_MODE 0
-#define DECRYPTION_MODE 1
+#define ENCRYPTION_MODE 1
+#define DECRYPTION_MODE 2
 
 typedef struct config {
 	int p;
@@ -15,4 +15,11 @@ typedef struct config {
 	FILE* output_file;
 	int algorithm_mode;
 } config;
+
+void get_additional_data(config* config);
+void get_private_key(config* config);
+void get_algorithm_mode(config* config);
+void get_input_path(config* config);
+void print_algorithm_modes();
+
 #endif

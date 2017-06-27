@@ -10,11 +10,17 @@ int main(int argc, char* argv[]) {
 	config* config = malloc(sizeof(config));
 	int valid_arguments = verify_arguments(argc, argv, config);
 	char* message;
+	unsigned int* ciphertext;
 
 	if(valid_arguments == VALID) {
 		get_additional_data(config);
-		message = read_file(config->input_file);
-		printf("Mensagem: %s\n", message);
+		if(config->algorithm_mode == ENCRYPTION_MODE) {
+			message = read_text_file(config->input_file);
+			encrypt_rsa(message, config);
+		}
+		else {
+			
+		}
 	}
 	else{
 		printf("tá tudo errado...\n");

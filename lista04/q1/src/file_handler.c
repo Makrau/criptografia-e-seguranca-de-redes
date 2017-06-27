@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-char* read_file(FILE* file) {
+char* read_text_file(FILE* file) {
 	char* message = NULL;
 	char* aux_pointer = NULL;
 	size_t string_size = 0;
@@ -35,6 +35,40 @@ char* read_file(FILE* file) {
 	}
 
 	return message;
+}
+
+unsigned int* read_ciphertext(FILE* file) {
+	unsigned int* ciphertext = NULL;
+	unsigned int* aux_pointer = NULL;
+	size_t string_size = 0;
+	size_t position = 0;
+	unsigned int read_number = EOF;
+
+	while(read_number) {
+		fscanf(file, "%d", &read_number);
+
+		if(read_number == EOF || read_number == '\n' || read_number == '\0') {
+			ciphertext[position] = '\0';
+			return ciphertext;
+		}
+
+		if(string_size <= position) {
+			string_size++;
+			aux_pointer = realloc(ciphertext, string_size);
+
+			if(!aux_pointer) {
+				printf("Error on realloc!\n");
+				free(ciphertext);
+				return NULL;
+			}
+
+			ciphertext = aux_pointer;
+		}
+		ciphertext[position] = read_number;
+		position++;
+	}
+
+	return ciphertext;
 }
 
 void clear_buffer() {
