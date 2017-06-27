@@ -3,7 +3,7 @@
 
 #include "argument_handler.h"
 #include "rsa.h"
-#include "extended_euclidean_algorithm.h"
+#include "mathematical_functions.h"
 
 int verify_arguments(int argc, char* argv[], config* config) {
 	if(argc != 4) {
@@ -11,24 +11,33 @@ int verify_arguments(int argc, char* argv[], config* config) {
 		return INVALID;
 	}
 
-	int p = atoi(argv[PRIME_P]);
-	int q = atoi(argv[PRIME_Q]);
+	config->p = atoi(argv[PRIME_P]);
+	config->q = atoi(argv[PRIME_Q]);
 	int public_key_e = atoi(argv[PUBLIC_KEY_E]);
 
-	int valid = verify_public_key(p, q, public_key_e, config);
+	int valid = verify_public_key(public_key_e, config);
 
 	return valid;
 }
 
-int verify_public_key(int p, int q, int public_key_e, config* config) {
-	int n = p * q;
-	int phi = phi_n(p, q);
+int verify_public_key(int public_key_e, config* config) {
+	int phi = phi_n(config->p, config->q);
 	int public_key = public_key_e;
 	int gcd;
-	config->n = n;
+	extended_struct* first = malloc(sizeof(extended_struct));
+	extended_struct* second = malloc(sizeof(extended_struct));
+
+	first->x = 1;
+	first->y = 0;
+	first->next = second;
+	first->previous = NULL;
+
+	second->x = 0;
+	second->y = 1;
+	second->previous = first;
 
 	do {
-		gcd = extended_euclidean_algorithm(phi, public_key);
+		gcd = extended_euclidean_algorithm(phi, public_key, second);
 		if(gcd == 1) {
 			config->public_key = public_key;
 			return VALID;

@@ -9,7 +9,7 @@ int main(int argc, char* argv[]) {
 	int valid_arguments = verify_arguments(argc, argv, config);
 
 	if(valid_arguments == VALID) {
-		printf("tudo certo\n");
+		get_private_key(config);
 	}
 	else{
 		printf("tá tudo errado...\n");

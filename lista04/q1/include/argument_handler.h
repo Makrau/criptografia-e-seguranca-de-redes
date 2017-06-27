@@ -10,7 +10,7 @@
 #define PUBLIC_KEY_E 3
 
 int verify_arguments(int argc, char* argv[], config* config);
-int verify_public_key(int p, int q, int public_key_e, config* config);
+int verify_public_key(int public_key_e, config* config);
 void arguments_description();
 
 #endif
