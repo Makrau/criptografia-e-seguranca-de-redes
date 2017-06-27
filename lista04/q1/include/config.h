@@ -12,7 +12,7 @@ typedef struct config {
 	int public_key;
 	int private_key;
 	FILE* input_file;
-	FILE* output_file;
+	char* output_path;
 	int algorithm_mode;
 } config;
 

@@ -8,21 +8,25 @@
 
 void encrypt_rsa(char* message, config* config) {
 	int n = (config->p) * (config->q);
-	int message_lenght = strlen((char*)message);
-	int i = 0;
+	size_t message_lenght = strlen((char*)message);
+	size_t i = 0;
 
 	for(i = 0; i < message_lenght; i++) {
-		printf("M: %d\n", message[i]);
 	}
 
-	unsigned int* result = malloc(message_lenght * sizeof(int));
-	printf("Tamanho da mensagem: %d\n", message_lenght);
+	unsigned int* result = malloc((message_lenght * sizeof(int)) + sizeof(int));
+	printf("Tamanho da mensagem: %lu\n", message_lenght);
 
 	for(i = 0; i < message_lenght; i++) {
 		result[i] = (unsigned int)modular_power(message[i], config->public_key, n);
+	}
+	result[i] = '\0';
+	for(i = 0; i < message_lenght; i++) {
 		printf("Result: %d\n", result[i]);
 	}
-	config-> output_file = fopen("output_file", "wb");
-	fwrite(result, sizeof(int), message_lenght, config->output_file);
+	
+	
+	FILE* output_file = fopen(config->output_path, "wb");
+	fwrite(result, sizeof(int), message_lenght, output_file);
 }
 

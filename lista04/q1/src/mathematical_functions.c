@@ -95,9 +95,6 @@ int get_inverse(int inverse, int module) {
 }
 
 int modular_power(int number, int power, int module) {
-	printf("number: %d\n", number);
-	printf("power: %d\n", power);
-	printf("module: %d\n", module);
 	int result = 1;
 	int counter = 0;
 

@@ -30,7 +30,7 @@ char* read_text_file(FILE* file) {
 
 			message = aux_pointer;
 		}
-		message[position] = read_char;
+		message[position] = (char)read_char;
 		position++;
 	}
 
@@ -42,12 +42,13 @@ unsigned int* read_ciphertext(FILE* file) {
 	unsigned int* aux_pointer = NULL;
 	size_t string_size = 0;
 	size_t position = 0;
-	unsigned int read_number = EOF;
+	unsigned int read_number = 1;
 
 	while(read_number) {
-		fscanf(file, "%d", &read_number);
+		fread(&read_number, sizeof(int), 1, file);
+		printf("readed: %d\n", read_number);
 
-		if(read_number == EOF || read_number == '\n' || read_number == '\0') {
+		if(read_number == '\n' || read_number == '\0') {
 			ciphertext[position] = '\0';
 			return ciphertext;
 		}

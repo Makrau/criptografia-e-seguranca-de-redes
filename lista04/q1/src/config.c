@@ -39,8 +39,10 @@ void get_input_path(config* config) {
 	char* input_path;
 	printf("Digite o caminho do arquivo de entrada: \n");
 	clear_buffer();
-	input_path = (char*)read_text_file(stdin);
+	input_path = read_text_file(stdin);
 	config->input_file = fopen(input_path, "rb");
+	printf("Digite o caminho do arquivo de saída: \n");
+	config->output_path = read_text_file(stdin);
 }
 
 
