@@ -9,7 +9,7 @@
 int main(int argc, char* argv[]) {
 	config* config = malloc(sizeof(config));
 	int valid_arguments = verify_arguments(argc, argv, config);
-	char* message;
+	unsigned char* message;
 	unsigned int* ciphertext;
 
 	if(valid_arguments == VALID) {
@@ -17,10 +17,12 @@ int main(int argc, char* argv[]) {
 		if(config->algorithm_mode == ENCRYPTION_MODE) {
 			message = read_text_file(config->input_file);
 			encrypt_rsa(message, config);
+			free(message);
 		}
 		else {
 			ciphertext = read_ciphertext(config->input_file);
-			
+			decrypt_rsa(ciphertext, config);
+			free(ciphertext);
 		}
 	}
 	else{

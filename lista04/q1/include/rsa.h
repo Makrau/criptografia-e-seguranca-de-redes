@@ -3,6 +3,7 @@
 
 #include "config.h"
 
-void encrypt_rsa(char* message, config* config);
+void encrypt_rsa(unsigned char* message, config* config);
+void decrypt_rsa(unsigned int* ciphertext, config* config);
 
 #endif

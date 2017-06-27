@@ -28,12 +28,9 @@ int find_inverse_multiplicative(int number, int module) {
 		return 0;
 	}
 	else {
-		printf("numero POSSUI inverso multiplicativo\n");
 			tail = get_tail(first);
 		inverse_multiplicative = get_inverse(tail->y, module);
-
-		printf("Inverso multiplicativo de %d no módulo %d: %d\n",
-			number, module, inverse_multiplicative);
+		
 		return inverse_multiplicative;
 	}
 }
@@ -98,11 +95,9 @@ int modular_power(int number, int power, int module) {
 	int result = 1;
 	int counter = 0;
 
-	for(counter = 0; counter <= power; counter++) {
+	for(counter = 0; counter < power; counter++) {
 		result = (result * number) % module;
 	}
-
-	result = result % module;
 
 	return result;
 }
