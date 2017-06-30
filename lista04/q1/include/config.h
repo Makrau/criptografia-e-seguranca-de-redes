@@ -3,8 +3,11 @@
 
 #include <stdio.h>
 
+#define INVALID 0
+#define VALID 1
 #define ENCRYPTION_MODE 1
 #define DECRYPTION_MODE 2
+#define MIN_N 256
 
 typedef struct config {
 	int p;
@@ -16,10 +19,10 @@ typedef struct config {
 	int algorithm_mode;
 } config;
 
-void get_additional_data(config* config);
-void get_private_key(config* config);
-void get_algorithm_mode(config* config);
-void get_input_path(config* config);
+int get_additional_data(config* config);
+int get_private_key(config* config);
+int get_algorithm_mode(config* config);
+int get_input_path(config* config);
 void print_algorithm_modes();
 
 #endif

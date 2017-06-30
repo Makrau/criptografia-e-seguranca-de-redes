@@ -3,8 +3,6 @@
 
 #include "config.h"
 
-#define INVALID 0
-#define VALID 1
 #define PRIME_P 1
 #define PRIME_Q 2
 #define PUBLIC_KEY_E 3

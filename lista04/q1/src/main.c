@@ -9,11 +9,16 @@
 int main(int argc, char* argv[]) {
 	config* config = malloc(sizeof(config));
 	int valid_arguments = verify_arguments(argc, argv, config);
+	int valid_data;
 	unsigned char* message;
 	unsigned int* ciphertext;
 
 	if(valid_arguments == VALID) {
-		get_additional_data(config);
+		valid_data = get_additional_data(config);
+		if(!valid_data) {
+			printf("Erro nos dados informados. Encerrando programa...\n");
+			return 0;
+		}
 		if(config->algorithm_mode == ENCRYPTION_MODE) {
 			message = read_text_file(config->input_file);
 			encrypt_rsa(message, config);
@@ -26,7 +31,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	else{
-		printf("tá tudo errado...\n");
+		printf("Erro nos argumentos.\nFechando programa....\n");
 	}
 	
 	return 0;

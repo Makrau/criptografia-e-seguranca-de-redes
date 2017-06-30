@@ -13,6 +13,12 @@ int verify_arguments(int argc, char* argv[], config* config) {
 
 	config->p = atoi(argv[PRIME_P]);
 	config->q = atoi(argv[PRIME_Q]);
+	int n = (config->p) * (config->q);
+	if(n < MIN_N) {
+		printf("Valores de p e q muito baixos!\n");
+		printf("O produto de p e q deve ser maior que 255.\n");
+		return INVALID;
+	}
 	int public_key_e = atoi(argv[PUBLIC_KEY_E]);
 
 	int valid = verify_public_key(public_key_e, config);
@@ -24,6 +30,7 @@ int verify_public_key(int public_key_e, config* config) {
 	int phi = phi_n(config->p, config->q);
 	int public_key = public_key_e;
 	int gcd;
+	int valid = INVALID;
 	extended_struct* first = malloc(sizeof(extended_struct));
 	extended_struct* second = malloc(sizeof(extended_struct));
 
@@ -38,11 +45,15 @@ int verify_public_key(int public_key_e, config* config) {
 
 	do {
 		gcd = extended_euclidean_algorithm(phi, public_key, second);
-		if(gcd == 1) {
+		if(gcd == 1 && phi > public_key) {
 			config->public_key = public_key;
-			return VALID;
+			valid = VALID;
+			return valid;
 		}
 		else {
+			if(public_key_e > phi) {
+				printf("Chave pública inválida. Valor maior que phi(n)!\n");
+			}
 			printf("GCD: %d\n", gcd);
 			printf("public key: %d\n", public_key);
 			printf("phi: %d\n", phi);
@@ -50,10 +61,10 @@ int verify_public_key(int public_key_e, config* config) {
 			printf("digite uma nova chave pública: \n");
 			scanf("%d", &public_key);
 		}
-	} while(gcd != 1);
+	} while(valid == INVALID);
 
 	// Not suposed to reach here...
-	return INVALID;
+	return valid;
 }
 
 void arguments_description() {
