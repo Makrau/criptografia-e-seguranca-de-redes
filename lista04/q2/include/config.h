@@ -4,7 +4,7 @@
 typedef struct config {
 	int a;
 	int b;
-	int p;
+	int module;
 }config;
 
 #endif

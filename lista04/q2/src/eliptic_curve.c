@@ -11,10 +11,10 @@ void find_elliptic_curve_points(config* config) {
 	int left_side_result;
 	int right_side_result;
 
-	printf("Pontos da curva elíptica E%d(%d, %d)\n", config->p, config->a, config->b);
-	for(x = 0; x < config->p; x++) {
-		for(y = 0; y < config->p; y++) {
-			left_side_result = modular_power(y, 2, config->p);
+	printf("Pontos da curva elíptica E%d(%d, %d)\n", config->module, config->a, config->b);
+	for(x = 0; x < config->module; x++) {
+		for(y = 0; y < config->module; y++) {
+			left_side_result = modular_power(y, 2, config->module);
 			right_side_result = get_right_side_result(config, x);
 
 			if(left_side_result == right_side_result) {
@@ -27,20 +27,20 @@ void find_elliptic_curve_points(config* config) {
 int get_right_side_result(config* config, int x) {
 	int result = 0;
 
-	result += modular_power(x, 3, config->p);
+	result += modular_power(x, 3, config->module);
 	result += (config->a * x);
 	result += config->b;
-	result = result % config->p;
+	result = result % config->module;
 
 	return result;
 }
 
-elliptic_point* elliptic_point_addition(elliptic_point* p, elliptic_point* q, int module) {
+elliptic_point* elliptic_point_addition(elliptic_point* p, elliptic_point* q, int a,
+ int module) {
+ 	//printf("P(%d, %d), Q(%d, %d), Module: %d, a: %d\n", p->x, p->y, q->x, q->y, module, a);
 	elliptic_point* r = malloc(sizeof(elliptic_point));
-	int divisor = modular_subtraction(q->x, p->x, module);
-	int modular_divisor = find_inverse_multiplicative(divisor, module);
-	int dividend = modular_subtraction(q->y, p->y, module);
-	int lambda = (dividend * modular_divisor) % module;
+	int lambda = get_lambda(p, q, a, module);
+	//printf("lambda: %d\n", lambda);
 	int partial_result;
 
 	// Rx = (lambda ^ 2 - Px - Qx)
@@ -56,4 +56,37 @@ elliptic_point* elliptic_point_addition(elliptic_point* p, elliptic_point* q, in
 	r->y = partial_result;
 
 	return r;
+}
+
+int same_point(elliptic_point* p, elliptic_point* q) {
+
+	if(p->x == q->x && p->y == q->y) {
+		return SAME_POINT;
+	}
+	else {
+		return DIFFERENT_POINTS;
+	}
+}
+
+int get_lambda(elliptic_point* p, elliptic_point* q, int a, int module) {
+	int lambda;
+	int divisor;
+	int dividend;
+	int modular_divisor;
+	int is_same_point = same_point(p, q);
+	if(is_same_point) {
+		//printf("Mesmo ponto!\n");
+		dividend = (3 * modular_power(p->x, 2, module) + a) % module;
+		divisor = (p->y * 2) % module;
+	}
+	else {
+		//printf("Pontos diferentes!\n");
+		divisor = modular_subtraction(q->x, p->x, module);
+		dividend = modular_subtraction(q->y, p->y, module);
+	}
+
+	modular_divisor = find_inverse_multiplicative(divisor, module);
+	lambda = (dividend * modular_divisor) % module;
+
+	return lambda;
 }

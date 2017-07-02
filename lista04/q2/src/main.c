@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 		scanf("%d %d", &p->x, &p->y);
 		printf("Digite as coordenadas de q: \n");
 		scanf("%d %d", &q->x, &q->y);
-		r = elliptic_point_addition(p, q, config->p);
+		r = elliptic_point_addition(p, q, config->a, config->module);
 		printf("R = (%d, %d)\n", r->x, r->y);
 	}
 	else {

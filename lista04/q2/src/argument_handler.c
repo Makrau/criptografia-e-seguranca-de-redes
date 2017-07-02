@@ -12,12 +12,12 @@ int verify_arguments(int argc, char* argv[], config* config) {
 	}
 	int a = atoi(argv[A_POSITION]);
 	int b = atoi(argv[B_POSITION]);
-	int p = atoi(argv[P_POSITION]);
+	int module = atoi(argv[P_POSITION]);
 
-	if(a >= 0 && b >= 0 && p > 0) {
+	if(a >= 0 && b >= 0 && module > 0) {
 		config->a = a;
 		config->b = b;
-		config->p = p;
+		config->module = module;
 		valid = VALID;
 	}
 	return valid;
