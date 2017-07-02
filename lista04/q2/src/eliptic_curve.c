@@ -2,7 +2,7 @@
 #include "mathematical_functions.h"
 
 #include <stdio.h>
-
+#include <stdlib.h>
 
 // y^2 (mod p) = x^3 + ax + b (mod p)
 void find_elliptic_curve_points(config* config) {
@@ -33,4 +33,27 @@ int get_right_side_result(config* config, int x) {
 	result = result % config->p;
 
 	return result;
+}
+
+elliptic_point* elliptic_point_addition(elliptic_point* p, elliptic_point* q, int module) {
+	elliptic_point* r = malloc(sizeof(elliptic_point));
+	int divisor = modular_subtraction(q->x, p->x, module);
+	int modular_divisor = find_inverse_multiplicative(divisor, module);
+	int dividend = modular_subtraction(q->y, p->y, module);
+	int lambda = (dividend * modular_divisor) % module;
+	int partial_result;
+
+	// Rx = (lambda ^ 2 - Px - Qx)
+	partial_result = modular_power(lambda, 2, module);
+	partial_result = modular_subtraction(partial_result, p->x, module);
+	partial_result = modular_subtraction(partial_result, q->x, module);
+	r->x = partial_result;
+
+	// Ry = (lambda * (Px - Rx) - Py)
+	partial_result = modular_subtraction(p->x, r->x, module);
+	partial_result = (lambda * partial_result) % module;
+	partial_result = modular_subtraction(partial_result, p->y, module);
+	r->y = partial_result;
+
+	return r;
 }
