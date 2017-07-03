@@ -27,7 +27,7 @@ int find_inverse_multiplicative(int number, int module) {
 		return 0;
 	}
 	else {
-			tail = get_tail(first);
+		tail = get_tail(first);
 		inverse_multiplicative = get_inverse(tail->y, module);
 		
 		return inverse_multiplicative;

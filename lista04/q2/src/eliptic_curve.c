@@ -5,23 +5,41 @@
 #include <stdlib.h>
 
 // y^2 (mod p) = x^3 + ax + b (mod p)
-void find_elliptic_curve_points(config* config) {
+elliptic_curve* find_elliptic_curve_points(config* config) {
 	int x = 0;
 	int y = 0;
 	int left_side_result;
 	int right_side_result;
+	int index = 0;
+	elliptic_point** curve_points = NULL;
+	elliptic_point* current_point;
+	elliptic_curve* elliptic_curve = malloc(sizeof(elliptic_curve));
 
-	printf("Pontos da curva elíptica E%d(%d, %d)\n", config->module, config->a, config->b);
 	for(x = 0; x < config->module; x++) {
 		for(y = 0; y < config->module; y++) {
 			left_side_result = modular_power(y, 2, config->module);
 			right_side_result = get_right_side_result(config, x);
 
 			if(left_side_result == right_side_result) {
-				printf("(%d, %d)\n", x, y);
+				current_point = malloc(sizeof(elliptic_point));
+				current_point->x = x;
+				current_point->y = y;
+				if(curve_points == NULL) {
+					curve_points = malloc(sizeof(elliptic_point*));
+				}
+				else {
+					curve_points = realloc(curve_points, (long unsigned int) (index + 1)
+					 * sizeof(elliptic_point*));
+				}
+				curve_points[index] = current_point;
+				index++;
 			}
 		}
 	}
+
+	elliptic_curve->qtd_curve_points = index;
+	elliptic_curve->elliptic_curve_points = curve_points;
+	return elliptic_curve;
 }
 
 int get_right_side_result(config* config, int x) {
@@ -37,7 +55,8 @@ int get_right_side_result(config* config, int x) {
 
 elliptic_point* elliptic_point_addition(elliptic_point* p, elliptic_point* q, int a,
  int module) {
- 	//printf("P(%d, %d), Q(%d, %d), Module: %d, a: %d\n", p->x, p->y, q->x, q->y, module, a);
+ // printf("Somando: \n");
+ //	printf("P(%d, %d), Q(%d, %d), Module: %d, a: %d\n", p->x, p->y, q->x, q->y, module, a);
 	elliptic_point* r = malloc(sizeof(elliptic_point));
 	int lambda = get_lambda(p, q, a, module);
 	//printf("lambda: %d\n", lambda);
@@ -89,4 +108,26 @@ int get_lambda(elliptic_point* p, elliptic_point* q, int a, int module) {
 	lambda = (dividend * modular_divisor) % module;
 
 	return lambda;
+}
+
+// void set_curve_points_order(elliptic_point** curve_points, config* config) {
+// 	int index = 0;
+// }
+
+// int get_point_order(elliptic_point** curve_points, elliptic_point* p, config* config) {
+// 	int order = 0;
+// 	int elliptic_point* aux = p;
+// }
+
+// int point_on_curve(elliptic_point** curve_points, elliptic_point* p) {
+// 	return POINT_BELONG_TO_CURVE;
+// }
+
+void print_curve(elliptic_curve* elliptic_curve) {
+	int i;
+	printf("Pontos da curva: \n");
+	for(i = 0; i < elliptic_curve->qtd_curve_points; i++) {
+		printf("(%d,%d)\n", elliptic_curve->elliptic_curve_points[i]->x,
+			elliptic_curve->elliptic_curve_points[i]->y);
+	}
 }
