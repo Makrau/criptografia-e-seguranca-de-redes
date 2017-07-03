@@ -24,7 +24,7 @@ int find_inverse_multiplicative(int number, int module) {
 	if(gcd != 1) {
 		printf("numero NÃO possui inverso multiplicativo!\n");
 
-		return 0;
+		return -1;
 	}
 	else {
 		tail = get_tail(first);

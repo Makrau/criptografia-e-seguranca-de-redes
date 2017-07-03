@@ -11,7 +11,8 @@ int main(int argc, char* argv[]) {
 	elliptic_curve* elliptic_curve;
 	if(valid_arguments == VALID) {
 		elliptic_curve = find_elliptic_curve_points(config->a, config->b, config->module);
-		//set_curve_points_order(elliptic_curve, config);
+		set_curve_points_order(elliptic_curve, config->a, config->module);
+		printf("\n");
 		print_curve(elliptic_curve);
 	}
 	else {
