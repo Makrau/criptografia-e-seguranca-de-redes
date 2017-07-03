@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 // y^2 (mod p) = x^3 + ax + b (mod p)
-elliptic_curve* find_elliptic_curve_points(config* config) {
+elliptic_curve* find_elliptic_curve_points(int a, int b, int module) {
 	int x = 0;
 	int y = 0;
 	int left_side_result;
@@ -15,10 +15,10 @@ elliptic_curve* find_elliptic_curve_points(config* config) {
 	elliptic_point* current_point;
 	elliptic_curve* elliptic_curve = malloc(sizeof(elliptic_curve));
 
-	for(x = 0; x < config->module; x++) {
-		for(y = 0; y < config->module; y++) {
-			left_side_result = modular_power(y, 2, config->module);
-			right_side_result = get_right_side_result(config, x);
+	for(x = 0; x < module; x++) {
+		for(y = 0; y < module; y++) {
+			left_side_result = modular_power(y, 2, module);
+			right_side_result = get_right_side_result(a, b, module, x);
 
 			if(left_side_result == right_side_result) {
 				current_point = malloc(sizeof(elliptic_point));
@@ -42,13 +42,13 @@ elliptic_curve* find_elliptic_curve_points(config* config) {
 	return elliptic_curve;
 }
 
-int get_right_side_result(config* config, int x) {
+int get_right_side_result(int a, int b, int module, int x) {
 	int result = 0;
 
-	result += modular_power(x, 3, config->module);
-	result += (config->a * x);
-	result += config->b;
-	result = result % config->module;
+	result += modular_power(x, 3, module);
+	result += (a * x);
+	result += b;
+	result = result % module;
 
 	return result;
 }
@@ -110,11 +110,11 @@ int get_lambda(elliptic_point* p, elliptic_point* q, int a, int module) {
 	return lambda;
 }
 
-// void set_curve_points_order(elliptic_point** curve_points, config* config) {
+// void set_curve_points_order(elliptic_point** curve_points, int a, int module) {
 // 	int index = 0;
 // }
 
-// int get_point_order(elliptic_point** curve_points, elliptic_point* p, config* config) {
+// int get_point_order(elliptic_point** curve_points, elliptic_point* p, int a, int module) {
 // 	int order = 0;
 // 	int elliptic_point* aux = p;
 // }
