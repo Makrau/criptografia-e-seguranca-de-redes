@@ -17,6 +17,7 @@ typedef struct elliptic_point {
 typedef struct elliptic_curve {
 	elliptic_point** curve_points;
 	int qtd_curve_points;
+	int high_order;
 }elliptic_curve;
 
 elliptic_curve* find_elliptic_curve_points(int a, int b, int module);

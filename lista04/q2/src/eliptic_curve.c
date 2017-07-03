@@ -128,10 +128,17 @@ int get_lambda(elliptic_point* p, elliptic_point* q, int a, int module) {
 
 void set_curve_points_order(elliptic_curve* elliptic_curve, int a, int module) {
 	int i;
+	int high_order = 0;
+	int current_order;
 	for(i = 0; i < elliptic_curve->qtd_curve_points; i++) {
-		elliptic_curve->curve_points[i]->order = get_point_order(elliptic_curve, 
-			elliptic_curve->curve_points[i], a, module);
+		current_order = get_point_order(elliptic_curve, elliptic_curve->curve_points[i], a,
+		 module);
+		elliptic_curve->curve_points[i]->order = current_order;
+		if(current_order > high_order) {
+			high_order = current_order;
+		}
 	}
+	elliptic_curve->high_order = high_order;
 }
 
 int get_point_order(elliptic_curve* elliptic_curve, elliptic_point* p, int a, int module) {
@@ -186,5 +193,15 @@ void print_curve(elliptic_curve* elliptic_curve) {
 	for(i = 0; i < elliptic_curve->qtd_curve_points; i++) {
 		printf("P(%d,%d), Ordem: %d\n", elliptic_curve->curve_points[i]->x,
 			elliptic_curve->curve_points[i]->y, elliptic_curve->curve_points[i]->order);
+	}
+	printf("\n");
+	printf("Total de pontos: %d\n", elliptic_curve->qtd_curve_points);
+	printf("Maior ordem: %d\n", elliptic_curve->high_order);
+	printf("Ponto(s) de maior ordem: \n");
+	for(i = 0; i < elliptic_curve->qtd_curve_points; i++) {
+		if(elliptic_curve->curve_points[i]->order == elliptic_curve->high_order){
+			printf("P(%d,%d)\n", elliptic_curve->curve_points[i]->x,
+			elliptic_curve->curve_points[i]->y);
+		}
 	}
 }
